@@ -29,6 +29,20 @@ class PolynomialDivider {
     return polynomial;
   }
 
+  getMonomialsFromFirstColumn(variableLetter) {
+    const monomialSet = new PolynomialSet();
+    this.matrix.forEach(matrixRow => {
+      const divisor = matrixRow[0];
+      if ((divisor !== null) && (divisor !== undefinied)) {
+        const term = new PolynomialTerm(1, variableLetter, math.product(-1, divisor));
+        const termSet = new PolynomialTermSet([term]);
+        const monomial = new Polynomial(termSet);
+        monomialSet.polynomials.push(monomial);
+      }
+    });
+    return monomialSet;
+  }
+
   prepareDivisionStep(divisor) {
     // Whether the matrix is newly created or the result of previous division rounds,
     // coefficients for the next division should be in the last matrix "row" array.
