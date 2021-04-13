@@ -1,4 +1,4 @@
-/*
+
 Rules: What ISN'T a Polynomial
 There are a few rules as to what polynomials cannot contain:
 
@@ -15,9 +15,8 @@ Polynomials cannot contain radicals.
 For example, 2y2 +√3x + 4 is not a polynomial.
 
 From <https://owlcation.com/stem/What-Is-a-Polynomial>
-*/
 
-/*
+
 Something cool to add to this class - ability to generate from an array of factors. Can we have more than one constructor?
 Found at https://stackoverflow.com/questions/43074714/how-to-calculate-coefficients-of-polynomial-expansion-in-javascript
 
@@ -38,12 +37,11 @@ function multiply(a1, a2) {
 var data = [[1, 3], [1, 1], [1, 2]], // (1+3x)(1+x)(1+2x)
 result = data.reduce(multiply);
 console.log(result);                 // [1, 6, 11, 6] = 1x^0 + 6x^1 + 11x^2 + 6x^3
-*/
 
-/*
+
 Tokenizing example for input processing. This is a simple calculator that does +, -, /, * so not the same but still interesting
 http://jorendorff.github.io/calc/docs/calculator-parser.html
-*/
+
 //function tokenize(code) {
 //    var results = [];
 //    var tokenRegExp = /\s*([A-Za-z]+|[0-9]+|\S)\s*/g;
@@ -54,6 +52,5 @@ http://jorendorff.github.io/calc/docs/calculator-parser.html
 //    return results;
 //}
 
-/*
+
 https://www.freecodecamp.org/news/how-to-build-a-math-expression-tokenizer-using-javascript-3638d4e5fbe9/
-*/

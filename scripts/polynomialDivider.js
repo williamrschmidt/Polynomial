@@ -2,14 +2,11 @@
 // import { polynomial } from './polynomial.js'
 
 class PolynomialDivider {
-  constructor(polynomial) {
-    this.polynomial = polynomial;
+  constructor() {
+    //this.polynomial = polynomial;
     // Initialize matrix with a seed array containing polynomial 
     // coefficients, and a leading null position for the divisor
     this.matrix = [];
-    let seedArray = [];
-    seedArray = [null, ...this.polynomial.rationalCoefficients];
-    this.matrix.push(seedArray);
   }
 
   getPolynomialFromLastRow(variableLetter, divisionStepNumber) {
@@ -70,11 +67,16 @@ class PolynomialDivider {
     // This round of synthetic division is done and the matrix is ready for another potential round of division.
   }
 
-  divideAll(variableLetter) {
+  divideAll(polynomial) {
     // Execute the divide method for each actual rational zero in the polynomial.
     // This should leave the matrix fully populated and ready to be presented.
+    const variableLetter = polynomial.termSet.terms[0].variableLetter;
+    this.matrix = []; // must reinitialize matrix as polynomial may be different from last division.
+    let seedArray = [null, ...polynomial.rationalCoefficients];
+    this.matrix.push(seedArray);
+
     let divisionStepNumber = 0;
-    this.polynomial.actualRationalZeroes.forEach((actualRationalZero) => {
+    polynomial.actualRationalZeroes.forEach((actualRationalZero) => {
       divisionStepNumber++;
       let divisionStepNumberCurrentRoot = 1;
       this.prepareDivisionStep(actualRationalZero);
@@ -126,8 +128,9 @@ class PolynomialDivider {
     // left-hand column for the divisor). A 2nd degree polynomial would
     // only require the tag '{r | r r r}', and in general the number of
     // 'r' characters after the pipe equals the polynomial degree.
-
-    let charsAfterPipe = Array(this.polynomial.degree).fill('r'); // r = right-justify numbers
+    const matrixWidth = this.matrix[0].length;
+    const charsAfterPipe = Array(matrixWidth - 1).fill('r'); // r = right-justify numbers
+    //let charsAfterPipe = Array(this.polynomial.degree).fill('r'); // r = right-justify numbers
     return ['r', '|', ...charsAfterPipe];
   }
 

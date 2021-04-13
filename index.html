@@ -52,8 +52,8 @@
       color: green;
     }
 
-    p.validation.visible {
-      visibility: visible;
+    p.validation.invalid {
+      /*visibility: visible;*/
       color: red;
     }
   </style>
@@ -78,7 +78,7 @@
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script-->
 
   <!--These are of course our own scripts with various utility functions-->
-  <script src="./scripts/factorNumbers.js"></script>
+  <script src="./scripts/factor.js"></script>
   <script src="./scripts/polynomial.js"></script>
   <script src="./scripts/polynomialSet.js"></script>
   <script src="./scripts/polynomialTerm.js"></script>
@@ -86,101 +86,26 @@
   <script src="./scripts/polynomialParser.js"></script>
   <script src="./scripts/polynomialDivider.js"></script>
   <script src="./scripts/polynomialMultiplier.js"></script>
+  <script src="./indexPageState.js"></script>
+  <script src="./indexPageManager.js"></script>
 </head>
 
 <body>
-  <input type="text" id="polynomialInput" placeholder="Enter a polynomial, e.g. 2x^2 -3x + 4 .."
-    onkeyup="displayInputPolynomialSet()"></input>
+
+  <input type="text" id="polynomialInput"
+    placeholder="Enter one or more polynomial, e.g. 2x^2 -3x + 4, (x + 2)(x - 3), etc."
+    onkeyup="processInput()"></input>
+
   <p id="validationMessage" class="validation"></p>
   <h1 id="polynomialSetDisplay"></h1>
-  <input type="submit" id="multiply" value="Multiply" onclick="multiplyInputPolynomialSet()"></input>
+
+  <input type="submit" id="multiply" value="Multiply" onclick="multiplyPolynomialSet()"></input>
   <h1 id="polynomialProductDisplay"></h1>
-  <input type="submit" id="factor" value="Factor" onclick="factorInputPolynomialSetProduct()"></input>
-  <h2 id="matrix"></h2>
-  <script>
 
-    function multiplyInputPolynomialSet() {
-      let polynomialSet = parseInputToPolynomialSet();
-      let polynomialProduct = polynomialSet.multiplyAll();
-      console.log("POLYNOMIAL PRODUCT");
-      console.log(polynomialProduct);
-      ///////////////////////////////////////////////////////////////////////////
-      const includeZeroCoefficientTerms = false;
-      const polynomialProductLatex = polynomialProduct.toLatex(includeZeroCoefficientTerms);
-      console.log("POLYNOMIAL PRODUCT LATEX");
-      console.log(polynomialProductLatex);
-      ///////////////////////////////////////////////////////////////////////////
-      const displayElement = document.getElementById("polynomialProductDisplay");
-      displayElement.innerText = polynomialProductLatex;
-      MathJax.typeset();
-      ///////////////////////////////////////////////////////////////////////////
-    }
+  <input type="submit" id="factor" value="Factor" onclick="factorPolynomialProduct()"></input>
+  <h2 id="polynomialFactorMatrixDisplay"></h2>
 
-    function parseInputToPolynomialSet() {
-      ///////////////////////////////////////////////////////////////////////////
-      const inputElement = document.getElementById("polynomialInput");
-      let input = inputElement.value;
-      ///////////////////////////////////////////////////////////////////////////
-      const parser = new PolynomialParser();
-      ///////////////////////////////////////////////////////////////////////////
-      const validationMessageElement = document.getElementById("validationMessage");
-      let validationStatus = parser.getInputValidationStatus(input);
-      if (validationStatus !== "Valid") {
-        inputElement.classList.add("invalid");
-        validationMessageElement.innerText = validationStatus;
-        validationMessageElement.classList.add("visible");
-      }
-      else {
-        inputElement.classList.remove("invalid");
-        validationMessageElement.innerText = "All Good";
-        validationMessageElement.classList.remove("visible");
-      }
-      ///////////////////////////////////////////////////////////////////////////
-      const termSets = parser.parseInputToTermSets(input);
-      console.log("TERM SETS");
-      console.log(termSets);
-      let polynomials = [];
-      termSets.forEach(termSet => {
-        polynomials.push(new Polynomial(termSet));
-      });
-      const polynomialSet = new PolynomialSet(polynomials);
-      console.log("Polynomial set from input");
-      console.log(polynomialSet);
-      return polynomialSet;
-    }
-
-    function displayInputPolynomialSet() {
-      const polynomialSet = parseInputToPolynomialSet();
-      ///////////////////////////////////////////////////////////////////////////
-      const includeZeroCoefficientTerms = false;
-      const polynomialSetLatex = polynomialSet.toLatex(includeZeroCoefficientTerms);
-      ///////////////////////////////////////////////////////////////////////////
-      const displayElement = document.getElementById("polynomialSetDisplay");
-      displayElement.innerText = polynomialSetLatex;
-      MathJax.typeset();
-      ///////////////////////////////////////////////////////////////////////////
-    }
-
-    function factorInputPolynomialSetProduct() {
-      // There is a ridiculous lack of state here as we continuously parse
-      // everything from the initial user input again and again. Oh well.
-      const polynomialSet = parseInputToPolynomialSet();
-      const polynomialProduct = polynomialSet.multiplyAll();
-      const variableLetter = polynomialProduct.termSet.terms[0].variableLetter;
-      const divider = new PolynomialDivider(polynomialProduct);
-      divider.divideAll(variableLetter);
-      console.log(divider);
-      ///////////////////////////////////////////////////////////////////////////
-      let matrixLatex = divider.renderToLatex();
-      console.log(matrixLatex);
-      ///////////////////////////////////////////////////////////////////////////
-      let matrixElement = document.getElementById("matrix");
-      matrixElement.textContent = matrixLatex;
-      MathJax.typeset();
-      ///////////////////////////////////////////////////////////////////////////
-    }
-
-  </script>
+  <script src="./index.js"></script>
 
 </body>
 

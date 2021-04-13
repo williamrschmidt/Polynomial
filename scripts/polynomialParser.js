@@ -80,7 +80,7 @@ class PolynomialParser {
     return result;
   }
 
-  parseInputToTermSets(input) {
+  parseInputToPolynomialSet(input) {
     //console.log("Parse input");
     //console.log(input);
     let polynomialStrings = this.parseInputToPolynomialStrings(input);
@@ -89,7 +89,14 @@ class PolynomialParser {
     let polynomialTermSets = polynomialStrings.map(polynomialString => this.parsePolynomialStringToTermSet(polynomialString));
     console.log("parsed polynomial term sets");
     console.log(polynomialTermSets);
-    return polynomialTermSets;
+    let polynomials = [];
+    polynomialTermSets.forEach(termSet => {
+      polynomials.push(new Polynomial(termSet));
+    });
+    const polynomialSet = new PolynomialSet(polynomials);
+    console.log("Polynomial set from input");
+    console.log(polynomialSet);
+    return polynomialSet;
   }
 
   parsePolynomialStringToTermSet(input) {
