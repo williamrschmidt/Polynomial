@@ -169,6 +169,8 @@ class PolynomialDivider {
       }
     }
     output = `${output} ${matrixEndTag}`;
+    console.log("Matrix LaTex");
+    console.log(output);
     return output;
   }
 }
