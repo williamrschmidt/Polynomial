@@ -1,22 +1,15 @@
-const pageManager = new IndexPageManager(
-  document.getElementById("polynomialInput"),
-  document.getElementById("validationMessage"),
-  document.getElementById("polynomialSetDisplay"),
-  document.getElementById("polynomialProductDisplay"),
-  document.getElementById("polynomialFactorMatrixDisplay")
-);
+const model = new IndexModel();
+const view = new IndexView(document, model);
+const controller = new IndexController(model, view);
 
 function processInput() {
-  pageManager.setInput();
-  if (pageManager.validateInput()) {
-    pageManager.processInput();
-  }
+  controller.processInput();
 }
 
 function multiplyPolynomialSet() {
-  pageManager.multiplyPolynomialSet();
+  controller.multiplyPolynomialSet();
 }
 
 function factorPolynomialProduct() {
-  pageManager.factorPolynomialProduct();
+  controller.factorPolynomialProduct();
 }

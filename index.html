@@ -48,12 +48,10 @@
       box-sizing: border-box;
       text-align: center;
       font-size: large;
-      /*visibility: hidden;*/
       color: green;
     }
 
     p.validation.invalid {
-      /*visibility: visible;*/
       color: red;
     }
   </style>
@@ -63,19 +61,8 @@
 
   <!--mathJax gives us the ability to format LaTeX mathematical equations and symbols for HTML output-->
   <!--https://www.latex-project.org/-->
-
-  <!--script type="text/javascript"
-    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script-->
-
-  <!--script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {inlineMath: [['$$','$$']]}
-    });
-  </script-->
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <!--script type="text/javascript" id="MathJax-script" 
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script-->
 
   <!--These are of course our own scripts with various utility functions-->
   <script src="./scripts/factor.js"></script>
@@ -86,8 +73,9 @@
   <script src="./scripts/polynomialParser.js"></script>
   <script src="./scripts/polynomialDivider.js"></script>
   <script src="./scripts/polynomialMultiplier.js"></script>
-  <script src="./indexPageState.js"></script>
-  <script src="./indexPageManager.js"></script>
+  <script src="./indexModel.js"></script>
+  <script src="./indexView.js"></script>
+  <script src="./indexController.js"></script>
 </head>
 
 <body>
@@ -105,6 +93,7 @@
   <input type="submit" id="factor" value="Factor" onclick="factorPolynomialProduct()"></input>
   <h2 id="polynomialFactorMatrixDisplay"></h2>
 
+  <!--Script that provides the "composition root" of our index page-->
   <script src="./index.js"></script>
 
 </body>

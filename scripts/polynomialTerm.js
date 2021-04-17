@@ -7,15 +7,11 @@ class PolynomialTerm {
   }
 
   clone() {
-    //console.log("object to be cloned");
-    //console.log(objectToClone);
     const clonedObject = Object.assign(
       Object.create(
         Object.getPrototypeOf(this)
       ),
       this);
-    //console.log("cloned object");
-    //console.log(clonedObject);
     return clonedObject;
   }
 

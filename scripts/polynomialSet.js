@@ -2,6 +2,7 @@ class PolynomialSet {
 
   constructor(polynomials) {
     this.polynomials = polynomials;
+    this.multiplier = new PolynomialMultiplier()
   }
 
   multiplyAll() {
@@ -10,11 +11,10 @@ class PolynomialSet {
         return this.polynomials[0];
       }
       else {
-        const multiplier = new PolynomialMultiplier();
         let result = this.polynomials[0];
         for (let i = 1; i < this.polynomials.length; i++) {
           let current = this.polynomials[i];
-          result = multiplier.multiply(result, current);
+          result = this.multiplier.multiply(result, current);
         }
         return result;
       }

@@ -122,14 +122,14 @@ class PolynomialDivider {
     });
   }
 
-  renderRowToLatex(arr) {
+  matrixRowToLatex(arr) {
     return arr.map(x => (x === null ? `` : x.toLatex())).join('&');
   }
 
   renderTestRowToMatrix(arr) {
     let matrixStartTag = '\\begin{vmatrix}';
     let matrixEndTag = '\\end{vmatrix}';
-    let testRowLatex = this.renderRowToLatex(arr);
+    let testRowLatex = this.matrixRowToLatex(arr);
     return `${matrixStartTag} ${testRowLatex} ${matrixEndTag}`;
   }
 
@@ -148,7 +148,7 @@ class PolynomialDivider {
     return ['r', '|', ...charsAfterPipe];
   }
 
-  renderToLatex() {
+  toLatex() {
     // Produces text that can be rendered as good-looking mathematical output.
     // We render this in the browser by linking to a JS library from MathJax.
     // https://www.latex-project.org//
@@ -158,13 +158,13 @@ class PolynomialDivider {
     for (let i = 0; i < this.matrix.length; i++) {
       let isSumsRow = (i > 0 && i % 2 === 0);
       if (output === matrixStartTag) {
-        output = `${output} ${this.renderRowToLatex(this.matrix[i])}`;
+        output = `${output} ${this.matrixRowToLatex(this.matrix[i])}`;
       }
       else {
         if (isSumsRow) {
-          output = `${output} \\\\ \\hline ${this.renderRowToLatex(this.matrix[i])}`;
+          output = `${output} \\\\ \\hline ${this.matrixRowToLatex(this.matrix[i])}`;
         } else {
-          output = `${output} \\\\ ${this.renderRowToLatex(this.matrix[i])}`;
+          output = `${output} \\\\ ${this.matrixRowToLatex(this.matrix[i])}`;
         }
       }
     }
