@@ -4,12 +4,22 @@
 class Polynomial {
 
   constructor(polynomialTermSet) {
-    this.termSet = polynomialTermSet;// polynomialTerms.sort((x, y) => (y.exponent - x.exponent)); // Terms are assumed to have no gaps, e.g. 2x^2 + 0x + 3, not 2x^2 + 3
+    this.termSet = polynomialTermSet;
+    // Al the properties below require for correctness that the complete
+    // term set has been passed in via the constructor. Were we to allow
+    // terms to be later added to the polynomial term set, these would 
+    // all have to be converted to properties with getter functions.
     this.coeffs = this.termSet.terms.map(x => x.coefficient); // Use the sorted terms to ensure correct coefficient ordering
     const termsExist = (this.termSet.terms.length > 0);
-    this.degree = termsExist ? this.termSet.terms[0].exponent : 0;
-    this.leadingCoeff = termsExist ? this.termSet.terms[0].coefficient : 0;
+    const nonConstantTermExists = (this.termSet.terms.length > 1);
+    // Leading coefficient and degree are both zero when the polynomial only contains a constant term.
+    // https://socratic.org/questions/what-is-the-degree-type-leading-coefficient-and-constant-term-of-h-x-6
+    this.degree = nonConstantTermExists ? this.termSet.terms[0].exponent : 0;
+    this.leadingCoeff = nonConstantTermExists ? this.termSet.terms[0].coefficient : 0;
     this.constantTerm = termsExist ? this.termSet.terms[this.termSet.terms.length - 1].coefficient : 0;
+    // This is also a place where we could throw an exception if the variable letters in terms are inconsistent
+    // Alternately that could be (maybe should be? maybe is?) taken care of by the PolynomialTermSet object.
+    this.variableLetter = nonConstantTermExists ? this.termSet.terms[0].variable : "x";
   }
 
   hasQuadraticOrHigherDegree() {
@@ -29,16 +39,15 @@ class Polynomial {
   toLatex(includeZeroCoefficientTerms) {
     const latexOuterDelimiter = "$$";
     const latex = `${latexOuterDelimiter}${this.toInnerLatex(includeZeroCoefficientTerms)}${latexOuterDelimiter}`;
-    console.log("Polynomial latex");
-    console.log(latex);
+    //console.log("Polynomial latex");
+    //console.log(latex);
     return latex;
   }
 
   toInnerLatex(includeZeroCoefficientTerms) {
     let latex = "";
-    this.termSet.terms.forEach(x => {
-      const isLeadingTerm = (x.exponent === this.degree);
-      latex = latex + x.toLatex(isLeadingTerm, includeZeroCoefficientTerms);
+    this.termSet.terms.forEach(term => {
+      latex = latex + term.toLatex(this.degree, includeZeroCoefficientTerms);
     })
     return latex;
   }
@@ -55,8 +64,10 @@ class Polynomial {
     let constantTermFactors = allFactorsOf(math.number(this.constantTerm));
     constantTermFactors.forEach((ctFactor) => {
       leadingCoefficientFactors.forEach((lcFactor) => {
-        result.push(math.fraction(ctFactor, lcFactor));
-        result.push(math.fraction(-1 * ctFactor, lcFactor));
+        if (lcFactor !== 0) {
+          result.push(math.fraction(ctFactor, lcFactor));
+          result.push(math.fraction(-1 * ctFactor, lcFactor));
+        }
       })
     })
     return deduplicate(result);

@@ -15,9 +15,9 @@ class PolynomialTerm {
     return clonedObject;
   }
 
-  signToLatex(isLeadingTerm) {
+  signToLatex(polynomialDegree) {
     const hasNegativeCoefficient = this.coefficient < 0;
-    if (isLeadingTerm) {
+    if (math.equal(this.exponent, polynomialDegree)) {
       if (hasNegativeCoefficient) {
         return "-"; // no space after sign for negative leading term
       }
@@ -36,38 +36,50 @@ class PolynomialTerm {
   }
 
   unsignedTermToLatex() {
-    const hasZeroExponent = this.exponent === 0;
-    const hasUnitExponent = this.exponent === 1;
-    const hasUnitCoefficient = math.abs(this.coefficient) === 1;
+    //console.log("UNSIGNED TERM TO LATEX - ORIGINAL TERM");
+    //console.log(this);
+    let result;
+    const hasZeroExponent = math.equal(this.exponent, 0);
+    const hasUnitExponent = math.equal(this.exponent, 1);
+    const hasUnitCoefficient = math.equal(math.abs(this.coefficient), 1);
+    //console.log("UNSIGNED TERM TO LATEX - COEFFICIENT");
+    //console.log(typeof (this.coefficient));
+    //console.log(this.coefficient);
     const coefficientAbsoluteValue = math.abs(this.coefficient);
+    //console.log("UNSIGNED TERM TO LATEX - COEFFICIENT ABSOLUTE VALUE");
+    //console.log(typeof (coefficientAbsoluteValue));
+    //console.log(coefficientAbsoluteValue);
     if (hasZeroExponent) {
-      return `${coefficientAbsoluteValue}`;
+      result = `${coefficientAbsoluteValue.toLatex()}`;
     }
     else if (hasUnitExponent) {
       if (hasUnitCoefficient) {
-        return `x`;
+        result = `${this.variable}`;
       }
       else {
-        return `${coefficientAbsoluteValue}x`;
+        result = `${coefficientAbsoluteValue.toLatex()}x`;
       }
     }
     else {
       if (hasUnitCoefficient) {
-        return `x^{${this.exponent}}`;
+        result = `${this.variable}^{${this.exponent}}`;
       }
       else {
-        return `${coefficientAbsoluteValue}x^{${this.exponent}}`;
+        result = `${coefficientAbsoluteValue.toLatex()}${this.variable}^{${this.exponent}}`;
       }
     }
+    //console.log("HERE IS THE RESULT");
+    //console.log(result);
+    return result;
   }
 
-  toLatex(isLeadingTerm, includeZeroCoefficientTerms) {
-    const hasZeroCoefficient = this.coefficient === 0;
-    if (hasZeroCoefficient && !includeZeroCoefficientTerms) {
+  toLatex(polynomialDegree, includeZeroCoefficientTerms) {
+    const hasZeroCoefficient = math.equal(this.coefficient, 0);
+    if (hasZeroCoefficient && (math.equal(this.exponent, 0) || !includeZeroCoefficientTerms)) {
       return "";
     }
     else {
-      return `${this.signToLatex(isLeadingTerm)}${this.unsignedTermToLatex()}`;
+      return `${this.signToLatex(polynomialDegree)}${this.unsignedTermToLatex()}`;
     }
   }
 }

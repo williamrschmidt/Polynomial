@@ -1,7 +1,10 @@
 class PolynomialSet {
 
   constructor(polynomials) {
-    this.polynomials = polynomials;
+    this.polynomials = [];
+    if ((polynomials !== null) && (polynomials !== undefined)) {
+      this.polynomials = polynomials;
+    }
     this.multiplier = new PolynomialMultiplier()
   }
 
@@ -24,8 +27,8 @@ class PolynomialSet {
   toLatex(includeZeroCoefficientTerms) {
     const latexOuterDelimiter = "$$";
     const result = `${latexOuterDelimiter}${this.toInnerLatex(includeZeroCoefficientTerms)}${latexOuterDelimiter}`;
-    console.log("Polynomial set latex");
-    console.log(result);
+    //console.log("Polynomial set latex");
+    //console.log(result);
     return result;
   }
 
@@ -39,8 +42,8 @@ class PolynomialSet {
         result = result + "(" + polynomial.toInnerLatex(includeZeroCoefficientTerms) + ")";
       });
     }
-    //console.log("Polynomial set inner latex");
-    //console.log(result);
+    ////console.log("Polynomial set inner latex");
+    ////console.log(result);
     return result;
   }
 }

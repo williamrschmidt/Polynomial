@@ -1,38 +1,47 @@
 class IndexView {
   constructor(document, model) {
     this.model = model;
-    this.inputElement = document.getElementById("polynomialInput");
-    this.validationMessageElement = document.getElementById("validationMessage");
-    this.polynomialSetDisplayElement = document.getElementById("polynomialSetDisplay");
-    this.polynomialProductDisplayElement = document.getElementById("polynomialProductDisplay");
-    this.polynomialFactorMatrixDisplayElement = document.getElementById("polynomialFactorMatrixDisplay");
+    this.inputElement = document.getElementById("input");
+    this.inputValidationDisplay = document.getElementById("inputValidationDisplay");
+    this.parsedInputDisplay = document.getElementById("parsedInputDisplay");
+    this.productButton = document.getElementById("productButton");
+    this.productDisplay = document.getElementById("productDisplay");
+    this.factorButton = document.getElementById("factorButton");
+    this.factorMatrixDisplay = document.getElementById("factorMatrixDisplay");
+    this.factorSetDisplay = document.getElementById("factorSetDisplay");
     this.renderZeroCoefficientTerms = false;
   }
 
   renderValidationMessage() {
-    this.validationMessageElement.innerText = this.model.validationStatus;
+    this.inputValidationDisplay.innerText = this.model.validationStatus;
     if (this.model.validationStatus.toLowerCase() !== "valid") {
       this.inputElement.classList.add("invalid");
-      this.validationMessageElement.classList.add("invalid");
+      this.inputValidationDisplay.classList.add("invalid");
     }
     else {
       this.inputElement.classList.remove("invalid");
-      this.validationMessageElement.classList.remove("invalid");
+      this.inputValidationDisplay.classList.remove("invalid");
     }
   }
 
   renderPolynomialSet() {
-    this.polynomialSetDisplayElement.innerText = this.model.polynomialSet.toLatex(this.renderZeroCoefficientTerms);
+    this.parsedInputDisplay.innerText = this.model.polynomialSet.toLatex(this.renderZeroCoefficientTerms);
     MathJax.typeset();
   }
 
   renderPolynomialProduct() {
-    this.polynomialProductDisplayElement.innerText = this.model.polynomialProduct.toLatex(this.renderZeroCoefficientTerms);
+    this.productDisplay.innerText = this.model.polynomialProduct.toLatex(this.renderZeroCoefficientTerms);
     MathJax.typeset();
   }
 
-  renderDivisionMatrix() {
-    this.polynomialFactorMatrixDisplayElement.textContent = this.model.divider.toLatex();
+  renderPolynomialFactorMatrix() {
+    this.factorMatrixDisplay.textContent = this.model.divider.matrixToLatex();
     MathJax.typeset();
   }
+
+  renderPolynomialFactors() {
+    this.factorSetDisplay.textContent = this.model.divider.polynomialFactorsToLatex();
+    MathJax.typeset();
+  }
+
 }

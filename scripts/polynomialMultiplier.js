@@ -10,14 +10,22 @@ class PolynomialMultiplier {
     let productTerms = [];
     polynomial1.termSet.terms.forEach(term1 => {
       polynomial2.termSet.terms.forEach(term2 => {
-        productTerms.push(new PolynomialTerm(
+        //console.log("MULTIPLIYING TERMS");
+        //console.log(term1);
+        //console.log(term2);
+        const productTerm = new PolynomialTerm(
           math.multiply(term1.coefficient, term2.coefficient),
           term1.variable,
-          term1.exponent + term2.exponent));
+          term1.exponent + term2.exponent);
+        //console.log("PRODUCT TERM");
+        //console.log(productTerm);
+        productTerms.push(productTerm);
       });
     });
     let productTermSet = new PolynomialTermSet(productTerms);
     let productPolynomial = new Polynomial(productTermSet);
+    //console.log("Product Polynomial");
+    //console.log(productPolynomial);
     return productPolynomial;
   }
 }

@@ -27,13 +27,13 @@ class PolynomialTermSet {
           termsConsolidated.push(current.clone()); // Important to push a clone of the item, not the same in-memory item
           //termsConsolidated.push(this.clone(current)); // Important to push a clone of the item, not the same in-memory item
         } else {
-          found.coefficient = found.coefficient + current.coefficient;
+          found.coefficient = math.add(found.coefficient, current.coefficient);
         }
       }
     });
     let termsConsolidatedSorted = termsConsolidated.sort((a, b) => b.exponent - a.exponent);
-    //console.log("combineLikeTerms function result:");
-    //console.log(termsConsolidated);
+    ////console.log("combineLikeTerms function result:");
+    ////console.log(termsConsolidated);
     this.terms = termsConsolidatedSorted;
   }
 
@@ -49,8 +49,8 @@ class PolynomialTermSet {
       }
     }
     let termsSorted = this.terms.sort((a, b) => b.exponent - a.exponent);
-    //console.log("injectZeroCoefficientTerms function result:");
-    //console.log(termsSorted);
+    ////console.log("injectZeroCoefficientTerms function result:");
+    ////console.log(termsSorted);
     this.terms = termsSorted;
   }
 

@@ -2,27 +2,27 @@ class IndexController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
+
+    this.view.inputElement.onkeyup = this.processInput.bind(this);
+    this.view.productButton.onclick = this.multiplyPolynomialSet.bind(this);
+    this.view.factorButton.onclick = this.factorPolynomialProduct.bind(this);
   }
 
   processInput() {
-    this.setInput();
+    this.model.inputValue = this.view.inputElement.value;
     if (this.validateInput()) {
       this.parseInput();
     }
   }
 
-  setInput() {
-    this.model.userInput = this.view.inputElement.value;
-  }
-
   validateInput() {
-    this.model.validationStatus = this.model.parser.getInputValidationStatus(this.model.userInput);
+    this.model.validationStatus = this.model.parser.getInputValidationStatus(this.model.inputValue);
     this.view.renderValidationMessage();
     return (this.model.validationStatus.toLowerCase() === "valid");
   }
 
   parseInput() {
-    this.model.polynomialSet = this.model.parser.parseInputToPolynomialSet(this.model.userInput);
+    this.model.polynomialSet = this.model.parser.parseInputToPolynomialSet(this.model.inputValue);
     this.view.renderPolynomialSet();
   }
 
@@ -33,6 +33,7 @@ class IndexController {
 
   factorPolynomialProduct() {
     this.model.divider.divideAll(this.model.polynomialProduct);
-    this.view.renderDivisionMatrix();
+    this.view.renderPolynomialFactors();
+    this.view.renderPolynomialFactorMatrix();
   }
 }

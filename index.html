@@ -4,66 +4,13 @@
 <head>
   <meta charset="utf-8">
   <title>Polynomial Synthetic Division</title>
-
-  <style>
-    input[type=text],
-    select {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-      text-align: center;
-      font-size: larger;
-    }
-
-    input[type=submit] {
-      width: 100%;
-      background-color: #4CAF50;
-      color: white;
-      padding: 14px 20px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    input[type=submit]:hover {
-      background-color: #45a049;
-    }
-
-    input[type=text].invalid {
-      color: red;
-    }
-
-    p.validation {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-      text-align: center;
-      font-size: large;
-      color: green;
-    }
-
-    p.validation.invalid {
-      color: red;
-    }
-  </style>
-
+  <link rel="stylesheet" href="index.css">
   <!--math.js gives us a lot of math functions, but we especially want it because it supports fractions-->
   <script src="https://unpkg.com/mathjs@9.2.0/lib/browser/math.js"></script>
-
   <!--mathJax gives us the ability to format LaTeX mathematical equations and symbols for HTML output-->
   <!--https://www.latex-project.org/-->
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
   <!--These are of course our own scripts with various utility functions-->
   <script src="./scripts/factor.js"></script>
   <script src="./scripts/polynomial.js"></script>
@@ -79,23 +26,21 @@
 </head>
 
 <body>
+  <input type="text" id="input"
+    placeholder="Enter one or more polynomial, e.g. 2x^2 -3x + 4, (x + 2)(x - 3), etc."></input>
 
-  <input type="text" id="polynomialInput"
-    placeholder="Enter one or more polynomial, e.g. 2x^2 -3x + 4, (x + 2)(x - 3), etc."
-    onkeyup="processInput()"></input>
+  <p id="inputValidationDisplay" class="validation"></p>
+  <h1 id="parsedInputDisplay"></h1>
 
-  <p id="validationMessage" class="validation"></p>
-  <h1 id="polynomialSetDisplay"></h1>
+  <input type="submit" id="productButton" value="Multiply"></input>
+  <h1 id="productDisplay"></h1>
 
-  <input type="submit" id="multiply" value="Multiply" onclick="multiplyPolynomialSet()"></input>
-  <h1 id="polynomialProductDisplay"></h1>
-
-  <input type="submit" id="factor" value="Factor" onclick="factorPolynomialProduct()"></input>
-  <h2 id="polynomialFactorMatrixDisplay"></h2>
+  <input type="submit" id="factorButton" value="Factor"></input>
+  <h1 id="factorSetDisplay"></h1>
+  <h2 id="factorMatrixDisplay"></h2>
 
   <!--Script that provides the "composition root" of our index page-->
   <script src="./index.js"></script>
-
 </body>
 
 </html>

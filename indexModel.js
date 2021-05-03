@@ -1,6 +1,6 @@
 class IndexModel {
   constructor() {
-    this.userInput = "";
+    this.inputValue = "";
     this.validationStatus = "Valid";
     this.polynomialSet = [];
     this.polynomialProduct = undefined;
