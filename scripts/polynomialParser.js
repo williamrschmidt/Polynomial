@@ -150,10 +150,13 @@ class PolynomialParser {
 
   tokensToTermSet(tokens) {
     const terms = tokens.map(x => new PolynomialTerm(
+      // set the coefficient. This has a lot of different cases but basically we are digging out a number, cast as a fraction type
       ((x[1].trim() === "" || x[1].trim() === "+" || x[1].trim() === "-") && x[2] === undefined ? math.fraction(0) :
         (x[1].trim() === "" || x[1].trim() === "+" || x[1].trim() === "-") ? math.fraction(parseInt(`${x[1].replace(/\s/g, "")}1`)) :
           math.fraction(parseInt(x[1].replace(/\s/g, "")))),
+      // set the variable letter. We default to "x" if nothing better is provided, but this should probably be updated
       (x[2] === undefined ? "x" : x[2].toLowerCase()), // undefined case will become coefficient * x^0
+      // set the exponent. This is also a number we fish out, but should be an integer, not a fraction
       (x[3] === undefined ? (x[2] === undefined ? 0 : 1) : parseInt(x[3].replace(/\s/g, "")))
     ));
     const polynomialTermSet = new PolynomialTermSet(terms);

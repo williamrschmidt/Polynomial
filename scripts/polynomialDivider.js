@@ -3,79 +3,74 @@
 
 class PolynomialDivider {
   constructor() {
-    //this.polynomial = polynomial;
-    // Initialize matrix with a seed array containing polynomial 
-    // coefficients, and a leading null position for the divisor
+
+    // Initialize matrix with a seed array, which will eventually contain 
+    // polynomial coefficients and a leading null position for the divisor
     this.matrix = [];
+
     // The variable letter used for output will be set in the
     // divideAll method based on the polynomial being factored
     this.variableLetterForOutput = null;
   }
 
-  getPolynomialFromLastRow() {
+  get divisionStepsTaken() {
     // Whether the matrix is newly created or the result of previous division rounds,
     // coefficients for the next division should be in the last matrix "row" array.
-    // Determine how many step have been taken in the division. This should be equal
-    // to (number of rows - 1) divided by two.
-    const divisionStepsTaken = math.divide((this.matrix.length - 1), 2);
-    //console.log(`Division Steps Taken: ${divisionStepsTaken}`);
+    // Determine how many step have been taken in the division. For a matrix with more
+    // than zero rows, this should be equal to (number of rows - 1) divided by two.
+    if (math.equal(this.matrix.length, 0)) {
+      return 0;
+    }
+    else {
+      return math.divide((this.matrix.length - 1), 2);
+    }
+  }
+
+  getPolynomialFromLastRow() {
     const lastRow = this.matrix[this.matrix.length - 1];
-    const constantTermColumnIndex = lastRow.length - 1 - divisionStepsTaken;
-    //console.log("Last row");
-    //console.log(lastRow);
     let terms = [];
-    // Iterate the row, excluding the first column (index = 0) which contains the
-    // zero, and excluding also any columns after the last meaningful one, representing
+
+    // Iterate the row, excluding the first column (index = 0) containing the divisor,
+    // and excluding also any columns after the last meaningful one, which represents
     // the constant term. That column index decreases as the division steps increase.
+    const constantTermColumnIndex = lastRow.length - 1 - this.divisionStepsTaken;
     for (let i = 1; i <= constantTermColumnIndex; i++) {
       const coefficient = math.fraction(lastRow[i]);
-      //console.log("Coefficient");
-      //console.log(coefficient);
-      const exponent = math.fraction(constantTermColumnIndex - i);
+
+      // Important - exponents are integers so DO NOT cast to a fraction here.
+      // The matrix column index is an integer, which is the right data type.
+      const exponent = constantTermColumnIndex - i;
       terms.push(new PolynomialTerm(coefficient, this.variableLetterForOutput, exponent));
     }
     const termSet = new PolynomialTermSet(terms);
     const polynomial = new Polynomial(termSet);
-    //console.log("Polynomial From Last Row");
-    //console.log(polynomial);
     return polynomial;
   }
 
-  getMonomialFactors() {
-    const monomialSet = new PolynomialSet();
-    //console.log("In getMonomialsFromFirstColumn: division matrix");
-    //console.log(this.matrix);
-    // Monomial factors are represented only by the divisors found on even-number-indexed rows
-    // Those should also be rows in which the zero position (divisor) is non-null.
+  getBinomialFactors() {
+    // Iterate over each divisor in the matrix and read out the first-degree binomial 
+    // it represents. Divisors are found in in column 0 of the matrix, but of course are found only in some rows.
+    // After doing this, we also extract any unfactored  remainder polynomial.
+    // The binomials and the remainder are returned as a polynomial set.
+    const binomialSet = new PolynomialSet();
     this.matrix.forEach(matrixRow => {
-      //console.log("Current Matrix row");
-      //console.log(matrixRow);
       const divisor = matrixRow[0];
-      //console.log("Curent Divisor");
-      //console.log(divisor);
       if ((divisor !== null) && (divisor !== undefined)) {
-        //console.log(`Processing divisor ${divisor}`);
         const leadingTerm = new PolynomialTerm(math.fraction(1), this.variableLetterForOutput, 1);
         const constantTerm = new PolynomialTerm(math.multiply(math.fraction(-1), divisor), this.variableLetterForOutput, 0);
         const termSet = new PolynomialTermSet([leadingTerm, constantTerm]);
-        const monomial = new Polynomial(termSet);
-        monomialSet.polynomials.push(monomial);
+        const binomial = new Polynomial(termSet);
+        binomialSet.polynomials.push(binomial);
       }
     });
-    //console.log("Monomial Set");
-    //console.log(monomialSet);
-    return monomialSet;
+    return binomialSet;
   }
 
   getPolynomialFactors() {
-    let result = this.getMonomialFactors();
-    let remainderPolynomial = this.getPolynomialFromLastRow();
-    //console.log("getPolynomialFactors: Remainder Polynomial");
-    //console.log(remainderPolynomial);
-    const remainderPolynomialHasDegreeZero = (math.equal(remainderPolynomial.degree, 0));
-    //console.log(`remainderPolynomialHasDegreeZero: ${remainderPolynomialHasDegreeZero}`);
+    let result = this.getBinomialFactors();
+
+    const remainderPolynomial = this.getPolynomialFromLastRow();
     const remainderPolynomialHasUnitConstantTerm = math.equal(remainderPolynomial.constantTerm, math.fraction(1, 1));
-    //console.log(`remainderPolynomialHasUnitConstantTerm: ${remainderPolynomialHasUnitConstantTerm}`);
 
     if (remainderPolynomial.degree === 0) {
       if (!remainderPolynomialHasUnitConstantTerm) {
@@ -86,7 +81,7 @@ class PolynomialDivider {
       result.polynomials.push(remainderPolynomial);
     }
     console.log("Polynomial Factors");
-    console.log(result);
+    console.log(result.toInnerLatex());
     return result;
   }
 
@@ -100,6 +95,8 @@ class PolynomialDivider {
   }
 
   executeDivisionStep() {
+    // Execute one round of synthetic division, carrying out numeric 
+    // manipulations more or less exactly as one would do on paper
     let coeffs = this.matrix[this.matrix.length - 3];  // array two up from bottom array
     let divisor = coeffs[0];
     let addenda = this.matrix[this.matrix.length - 2]; // array one up from bottom array
@@ -112,7 +109,6 @@ class PolynomialDivider {
     // Iterate over all the other columns to the right of the one containing the leading coefficient and carry out
     // the repeating operation of synthetic division, which is to multiply our divisor (item 0 in the coeffs array)
     // by the previous sum, add it to the current coefficient to obtain a new sum, which is placed in the sums array.
-
     for (let i = 2; i < coeffs.length; i++) {
 
       let lastColSum = sums[i - 1];
@@ -124,26 +120,45 @@ class PolynomialDivider {
       sums[i] = nextColSum;
     }
     let polynomialResult = this.getPolynomialFromLastRow();
+
+    // This console output is pretty useful, not too overwhelming
     console.log(`Division Step ${this.divisionStepsTaken} Polynomial Result`)
-    console.log(polynomialResult.toLatex());
+    console.log(polynomialResult.toInnerLatex());
+    console.log(polynomialResult);
+
     return polynomialResult;
     // This round of synthetic division is done and the matrix is ready for another potential round of division.
   }
 
   divideAll(polynomial) {
-    // Execute the divide method for each actual rational zero in the polynomial.
-    // This should leave the matrix fully populated and ready to be presented.
+    // Execute as many individual synthetic division steps as required to fully factor the polynomial into
+    // degree-one binomials, plus a potential remainder polynomial (which may be simply a constant term).
+    // We are only using divisors already proven to be zeroes so each division step should result in a clean 
+    // remainder polynomial of degree one less than the degree of the original polynomial divided in that step.
+    // Note that some steps may be repeated more than once, if the divisor for one step can be again used as a 
+    // divisor for the remainder polynomial. When all steps are taken, the matrix is fully populated.
     console.log("Polynomial to be divided");
+    console.log(polynomial.toInnerLatex());
     console.log(polynomial);
+
+    // Set the PolynomialDivider object's variableLetterForOutput property. This character is cached so that
+    // the divider can later read out the coefficients from the matrix and typset those polynomials on screen.
     this.variableLetterForOutput = polynomial.variableLetter;
-    //console.log("Polynomial Divider Assigned Variable Letter");
-    //console.log(this.variableLetterForOutput);
+
     this.matrix = []; // must reinitialize matrix as polynomial may be different from last division.
+
+    // The seed array is simply the first row of the matrix, containing the original 
+    // polynomial coefficients, and an empty initial column (index = 0) for divisors
     let seedArray = [null, ...polynomial.rationalCoefficients];
     this.matrix.push(seedArray);
 
     let divisionStepNumber = 0; // used for logging to console only
+
+    // A Polynomial object already knows what its actual rational zeroes are.
+    // These constitute the universe of divisors we can use in division steps.
     polynomial.actualRationalZeroes.forEach((actualRationalZero) => {
+      // Useful output
+      console.log(`Working on divisor ${actualRationalZero}`);
 
       divisionStepNumber++;
       let divisionStepNumberCurrentRoot = 1; // also used only for logging to console when one we have a repeating root
@@ -151,30 +166,18 @@ class PolynomialDivider {
       this.prepareDivisionStep(actualRationalZero);
       let polynomialResult = this.executeDivisionStep();
 
-      //console.log("First division result");
-      //console.log(polynomialResult);
-      //console.log("First division divisor");
-      //console.log(actualRationalZero);
-      //console.log("First division result actual rational zeroes");
-      //console.log(polynomialResult.actualRationalZeroes);
-
-      let canStillDivide = polynomialResult.hasActualRationalZero(actualRationalZero) && (polynomialResult.hasQuadraticOrHigherDegree());
+      let canStillDivide = polynomialResult.hasActualRationalZero(actualRationalZero); // this was wrong -> stopped things too soon. example: would not allow 3x - 12 to be divided again by zero 4 yielding (3)(x - 4) //&& (polynomialResult.hasQuadraticOrHigherDegree());
       if (canStillDivide) {
-        //console.log("Divisor can divide again");
         // We aren't done if this rational zero divides the polynomial multiple times.
-        // If this is truewe can take care of that with a do...while loop until the 
+        // If this is true we can take care of that with a do...while loop until the 
         // rational zero is "tapped out" for division. Then we move to the next one.
         do {
+          // More useful output
+          console.log(`Still working on divisor ${actualRationalZero}`);
           divisionStepNumber++;
           divisionStepNumberCurrentRoot++;
-          //console.log(`Root ${actualRationalZero} division iteration ${divisionStepNumberCurrentRoot}`)
           this.prepareDivisionStep(actualRationalZero);
-
           polynomialResult = this.executeDivisionStep();
-
-          //console.log("Additional division result");
-          //console.log(polynomialResult);
-
           canStillDivide = polynomialResult.hasActualRationalZero(actualRationalZero) && (polynomialResult.hasQuadraticOrHigherDegree());
         }
         while (canStillDivide);
@@ -204,7 +207,6 @@ class PolynomialDivider {
     // 'r' characters after the pipe equals the polynomial degree.
     const matrixWidth = this.matrix[0].length;
     const charsAfterPipe = Array(matrixWidth - 1).fill('r'); // r = right-justify numbers
-    //let charsAfterPipe = Array(this.polynomial.degree).fill('r'); // r = right-justify numbers
     return ['r', '|', ...charsAfterPipe];
   }
 
@@ -229,6 +231,7 @@ class PolynomialDivider {
       }
     }
     output = `${output} ${matrixEndTag}`;
+    // Uncomment to see typesetting gobbledygook for the matrix
     //console.log("Matrix LaTex");
     //console.log(output);
     return output;

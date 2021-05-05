@@ -31,6 +31,8 @@ class PolynomialTermSet {
         }
       }
     });
+    // Watch out - this sort order does not seem to work if exponents are fraction objects!
+    // We shouldn't allow this anyway because it violates the definition of a polynomial
     let termsConsolidatedSorted = termsConsolidated.sort((a, b) => b.exponent - a.exponent);
     ////console.log("combineLikeTerms function result:");
     ////console.log(termsConsolidated);
