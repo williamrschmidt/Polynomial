@@ -31,4 +31,4 @@ class PolynomialMultiplier {
 }
 
 // Google Chrome won't run module based code from files for security reasons
-// export { divider }
+// export { PolynomialMultiplier }

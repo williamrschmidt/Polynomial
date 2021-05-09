@@ -3,7 +3,6 @@
 
 class PolynomialDivider {
   constructor() {
-
     // Initialize matrix with a seed array, which will eventually contain 
     // polynomial coefficients and a leading null position for the divisor
     this.matrix = [];
@@ -85,13 +84,32 @@ class PolynomialDivider {
     return result;
   }
 
-  prepareDivisionStep(divisor) {
-    // Whether the matrix is newly created or the result of previous division rounds,
-    // coefficients for the next division should be in the last matrix "row" array.
-    let lastRow = this.matrix[this.matrix.length - 1];
-    lastRow[0] = math.fraction(divisor);
-    this.matrix.push(lastRow.map((x) => null));
-    this.matrix.push(lastRow.map((x) => null));
+  prepareDivisionStep() {
+    // The matrix row contianing polynomial coefficients already is in place.
+    // Extract the polynomial from that existing matrix row, then determine 
+    // whether it has rational zeroes. If it does not, return false. If it 
+    // does, pick one of them to use as divisor, and set up the division step 
+    // by creating addiitonal matrix rows and populating them accordingly.
+    const polynomial = this.getPolynomialFromLastRow();
+    if (polynomial.actualRationalZeroes.length === 0) {
+      return false;
+    }
+    else {
+      // Pick the largest zero, sorting with math.subtract since b and a are fractions.
+      // This is just for aesthetics. Any zero would do.
+      const divisor = polynomial.actualRationalZeroes.sort((a, b) => math.subtract(b, a))[0];
+
+      // Whether the matrix is newly created or the result of previous division rounds,
+      // coefficients for the next division should be in the last matrix "row" array.
+      // Set the divisor as the first element in that row, and create two new empty rows.
+      let lastRow = this.matrix[this.matrix.length - 1];
+      lastRow[0] = math.fraction(divisor);
+      this.matrix.push(lastRow.map((x) => null));
+      this.matrix.push(lastRow.map((x) => null));
+
+      // We are done preparing. Execution is handled elsewhere.
+      return true;
+    }
   }
 
   executeDivisionStep() {
@@ -152,37 +170,18 @@ class PolynomialDivider {
     let seedArray = [null, ...polynomial.rationalCoefficients];
     this.matrix.push(seedArray);
 
-    let divisionStepNumber = 0; // used for logging to console only
+    let canStart = (polynomial.actualRationalZeroes.length > 0);
+    let canDivide = false;
 
-    // A Polynomial object already knows what its actual rational zeroes are.
-    // These constitute the universe of divisors we can use in division steps.
-    polynomial.actualRationalZeroes.forEach((actualRationalZero) => {
-      // Useful output
-      console.log(`Working on divisor ${actualRationalZero}`);
-
-      divisionStepNumber++;
-      let divisionStepNumberCurrentRoot = 1; // also used only for logging to console when one we have a repeating root
-
-      this.prepareDivisionStep(actualRationalZero);
-      let polynomialResult = this.executeDivisionStep();
-
-      let canStillDivide = polynomialResult.hasActualRationalZero(actualRationalZero); // this was wrong -> stopped things too soon. example: would not allow 3x - 12 to be divided again by zero 4 yielding (3)(x - 4) //&& (polynomialResult.hasQuadraticOrHigherDegree());
-      if (canStillDivide) {
-        // We aren't done if this rational zero divides the polynomial multiple times.
-        // If this is true we can take care of that with a do...while loop until the 
-        // rational zero is "tapped out" for division. Then we move to the next one.
-        do {
-          // More useful output
-          console.log(`Still working on divisor ${actualRationalZero}`);
-          divisionStepNumber++;
-          divisionStepNumberCurrentRoot++;
-          this.prepareDivisionStep(actualRationalZero);
-          polynomialResult = this.executeDivisionStep();
-          canStillDivide = polynomialResult.hasActualRationalZero(actualRationalZero) && (polynomialResult.hasQuadraticOrHigherDegree());
+    if (canStart) {
+      do {
+        canDivide = this.prepareDivisionStep();
+        if (canDivide) {
+          this.executeDivisionStep();
         }
-        while (canStillDivide);
       }
-    });
+      while (canDivide);
+    }
   }
 
   matrixRowToLatex(arr) {
@@ -231,7 +230,7 @@ class PolynomialDivider {
       }
     }
     output = `${output} ${matrixEndTag}`;
-    // Uncomment to see typesetting gobbledygook for the matrix
+    //Uncomment to see LaTex used to typeset the matrix
     //console.log("Matrix LaTex");
     //console.log(output);
     return output;
@@ -244,4 +243,4 @@ class PolynomialDivider {
 }
 
 // Google Chrome won't run module based code from files for security reasons
-// export { divider }
+// export { PolynomialDivider }

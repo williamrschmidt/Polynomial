@@ -20,22 +20,19 @@ class PolynomialTermSet {
     this.terms.forEach(current => {
       if (termsConsolidated.length === 0) {
         termsConsolidated.push(current.clone()); // Important to push a clone of the item, not the same in-memory item
-        //termsConsolidated.push(this.clone(current)); // Important to push a clone of the item, not the same in-memory item
       } else {
         let found = termsConsolidated.find(existing => existing.exponent === current.exponent);
         if (found === null || found === undefined) {
           termsConsolidated.push(current.clone()); // Important to push a clone of the item, not the same in-memory item
-          //termsConsolidated.push(this.clone(current)); // Important to push a clone of the item, not the same in-memory item
         } else {
           found.coefficient = math.add(found.coefficient, current.coefficient);
         }
       }
     });
+
     // Watch out - this sort order does not seem to work if exponents are fraction objects!
     // We shouldn't allow this anyway because it violates the definition of a polynomial
     let termsConsolidatedSorted = termsConsolidated.sort((a, b) => b.exponent - a.exponent);
-    ////console.log("combineLikeTerms function result:");
-    ////console.log(termsConsolidated);
     this.terms = termsConsolidatedSorted;
   }
 
@@ -51,8 +48,6 @@ class PolynomialTermSet {
       }
     }
     let termsSorted = this.terms.sort((a, b) => b.exponent - a.exponent);
-    ////console.log("injectZeroCoefficientTerms function result:");
-    ////console.log(termsSorted);
     this.terms = termsSorted;
   }
 

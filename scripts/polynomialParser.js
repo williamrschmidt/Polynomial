@@ -3,161 +3,221 @@
 
 class PolynomialParser {
 
-  constructor() {
-    this.singlePolynomialRegex = /(\s*[\+-]?\s*\d*)(\s*x)?(?:\s*\^\s*([\+-]?\s*\d+))?/gi;
-    //this.regexWithoutCaptureGroups = /([\+-]?\d*)(?:x(?:\^[\+-]?\d+)?)?/gi
-    this.multiPolynomialRegex = /\(([^)]+)\)/g;
+  constructor(tokenizer) {
+    // Tokenizer is used to parse strings to token arrays
+    this.tokenizer = tokenizer;
+
+    // The regex below captures all individual polynomial terms from one polynomial string
+    // Given "2x^5 - 4/5x^3 + 4x - 4", captures "2x^5", " - 4/5x^3", " + 4x", and " - 4"
+    // Each capture gets the entire term along with three sub-segments defined via capture groups ()
+    //     (\s*[\+-]?\s*\d*[/]?\d*)    captures the coefficient       e.g. "2", " - 4/5", " + 4", " - 4"
+    //     (\s*x)?                     captures the variable letter   e.g. "x", "x", "", "x"
+    //     (?:\s*\^\s*([\+-]?\s*\d+))? identifies an exponent segment e.g. "^5", "^3", "", ""
+    //                ([\+-]?\s*\d+)   captures the numeric exponent  e.g. "5", "3", "", ""
+    this.polynomialTermRegex = /(\s*[\+-]?\s*\d*[/]?\d*)(\s*x)?(?:\s*\^\s*([\+-]?\s*\d+))?/gi;
+
+    // The regex below captures all the whole polynomials between parentheses in a string
+    // Given "(2x^3 - 5)(4x + 4)", captures "2x^3 - 5" and "4x + 4"
+    this.polynomialBetweenParenthesesRegex = /\(([^)]+)\)/g;
     //this.multiPolynomialRegex = /\(([^\)])\)/g; Corrupted the regex! Stopped working! Doesn't pick up multi-chars in parens.
     //this.multiPolynomialRegex = /\((.*)\)/g; picks up single polys in parens but mashes multi polys together into one bogus one
-    this.multiLetterSequenceRegex = /[A-Za-z]{2}/;
-    this.letterFollowedByNumeralRegex = /[a-zA-Z][0-9]/;
-    this.individualLetterCaptureRegex = /([a-zA-Z]{1})/g;
-  }
 
-  getInputValidationStatus(input) {
-    let result = "Valid";
-
-    // check for multiple different letters anywhere in the whole input string, e.g. 2x^2 + 3y
-    const singleLetterTokens = this.tokenize(input, this.individualLetterCaptureRegex);
-    //console.log("Individual Letter Capture Regex Tokens");
-    //console.log(singleLetterTokens);
-    let multipleLettersFound = false;
-    let lastExaminedLetter = null;
-    // tokens contain captured individual letter characters.
-    // Analyze to see if these are all the same or different.
-    // Each captured token is itself an array. For string "x + y", 
-    // the first captured token is ["x", "x", index: 0, input: "x + y", groups: undefined].
-    // The second caputured token is ["y", "y", index: 4, input: "x + y", groups: undefined]
-    singleLetterTokens.forEach(singleLetterToken => {
-      const currentLetter = singleLetterToken[0];
-      if ((lastExaminedLetter !== null) && (lastExaminedLetter.toLowerCase() !== currentLetter.toLowerCase())) {
-        multipleLettersFound = true;
-      }
-      lastExaminedLetter = currentLetter;
-    });
-    if (multipleLettersFound) {
-      result = "Invalid: Cannot use two different variable letters";
-      return result;
-    }
-
-    // check for multiple letters in a row, e.g. xx. This will also on its own find patterns
-    // like xy, but that will have been caught already by the multi-letter test above.
-    if (input.match(this.multiLetterSequenceRegex)) {
-      result = "Invalid: Cannot have two letters in sequence";
-      return result;
-    }
-
-    // check for letters followed immediately by numerals, e.g. x4 rather than the correct x^4.
-    if (input.match(this.letterFollowedByNumeralRegex)) {
-      result = "Invalid: Exponents must be separated from variables by the ^ character";
-      return result;
-    }
-
-    return result;
+    // The regex below determines whether either a left or right parenthesis exists in a string.
+    this.hasParenthesesRegex = /[\(\)]/g;
   }
 
   parseInputToPolynomialSet(input) {
-    ////console.log("Parse input");
-    ////console.log(input);
     let polynomialStrings = this.parseInputToPolynomialStrings(input);
-    ////console.log("parsed whole polynomials");
-    ////console.log(polynomialStrings);
     let polynomialTermSets = polynomialStrings.map(polynomialString => this.parsePolynomialStringToTermSet(polynomialString));
-    //console.log("parsed polynomial term sets");
-    //console.log(polynomialTermSets);
     let polynomials = [];
     polynomialTermSets.forEach(termSet => {
       polynomials.push(new Polynomial(termSet));
     });
     const polynomialSet = new PolynomialSet(polynomials);
-    //console.log("Polynomial set from input");
-    //console.log(polynomialSet);
     return polynomialSet;
   }
 
   parsePolynomialStringToTermSet(input) {
-    ////console.log("Tokens with capture groups");
-    let tokens = this.tokenize(input, this.singlePolynomialRegex);
-    ////console.log(tokens);
+    console.log("parsePolynomialStringToTermSet: Entering");
 
-    ////console.log("Term set cleaned up as objects");
-    let termSet = this.tokensToTermSet(tokens);
-    ////console.log(tokenObjects);
+    // Currently setting hard default to "x." 
+    // Improving this would mean scanning the whole polynomial string for letters first.
+    // We should do that here, where we have the entire input available.
+    const variableLetterDefault = "x";
 
+    console.log("parsePolynomialStringToTermSet: Tokens with capture groups");
+    let tokens = this.tokenizer.tokenize(input, this.polynomialTermRegex);
+    console.log(tokens);
+
+    console.log("parsePolynomialStringToTermSet: Term set cleaned up as objects");
+    let termSet = this.tokensToTermSet(tokens, variableLetterDefault);
+    console.log(termSet);
+
+    console.log("parsePolynomialStringToTermSet: Exiting");
     return termSet;
   }
 
   parseInputToPolynomialStrings(input) {
-
-    //console.log("Parse input to polynomial strings input:");
-    //console.log(input);
-
+    console.log("parseInputToPolynomialStrings: Entering");
     let result = [];
-    if (!input.match(/[\(\)]/g)) { //this.multiPolynomialRegex)) {
-      // If no parentheses found, assume only one polynomial
-      // Return the entire input string as a single-element array
-      //console.log("No parentheses found");
+
+    if (!input.match(this.hasParenthesesRegex)) {
+      // No parentheses found, so assume the entire input string is 
+      // one polynomial and return it in a single-element array
       result.push(input);
     }
     else {
-      // Even if no right parenthesis exists we still use this branch
-      // We won't find anything if the user has typed only partial input
-      //console.log("Parenthesis found");
-      if (input.match(this.multiPolynomialRegex)) {
-        //console.log("Double parentheses found")
-      }
-      let wholePolynomialTokens = this.tokenize(input, this.multiPolynomialRegex); // produces an array of matches
+      let wholePolynomialTokens = this.tokenizer.tokenize(input, this.polynomialBetweenParenthesesRegex);
       wholePolynomialTokens.forEach(token => {
         if ((token[0] !== "") && (token[0] !== undefined)) {
           result.push(token[0]);
         }
       })
     }
-    //console.log("Parse whole polynomials result");
-    //console.log(result);
+    console.log("parseInputToPolynomialStrings: Exiting");
     return result;
   }
-
-  tokenize(str, regex) {
-    // With some modiication by me to add the result array, this
-    // code was helpfully generated by an online tool at
-
-    // https://regex101.com/
-    // Another useful tool that will diagram your regex is at
-    // https://regexper.com/
-
-    // https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-
-    ////console.log("Tokenize function input:");
-    ////console.log(str);
-
-    let tokens = [];
-    let token;
-
-    while ((token = regex.exec(str)) !== null) {
-      // This is necessary to avoid infinite loops with zero-width matches
-      if (token.index === regex.lastIndex) {
-        regex.lastIndex++;
+  /*
+    tokenize(str, regex) {
+      // Uses a regex to read one or more tokens from a string into an array.
+      // For example, we use this to pull polynomial terms from a polynomial string.
+      // Tkens are themselves arrays whose zero-index item is the captured pattern match,
+      // and whose other items are sub-matches within that isolated using regex capture grups.
+  
+      // With some modiication by me to add the result array, this code was generated by an online tool at
+      // https://regex101.com/
+  
+      // Another useful tool that will diagram your regex is at
+      // https://regexper.com/
+  
+      // Further resources
+      // https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
+  
+      let tokens = [];
+      let token;
+  
+      while ((token = regex.exec(str)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (token.index === regex.lastIndex) {
+          regex.lastIndex++;
+        }
+        // Only push the captured token if it is non-empty
+        if (token[0] !== "") tokens.push(token);
       }
-      // check to see if the captured token string is empty before pushing
-      if (token[0] !== "") tokens.push(token);
+      return tokens;
     }
-    ////console.log("Tokenize function result:");
-    ////console.log(tokens);
-    return tokens;
+  */
+  getCoefficientFromToken(token) {
+    // Extract a math.fraction object representing the numerical coefficient of a polynomial term.
+    // We have to handle different cases, based on whether or not there is a variable letter, etc.
+
+    const capturedCoefficient = token[1];
+    const capturedCoefficientIsEmpty = (capturedCoefficient.trim() === "");
+    const capturedCoefficientIsSignOnly = (capturedCoefficient.trim() === "+" || capturedCoefficient.trim() === "-");
+    const capturedVariable = token[2];
+
+    if ((capturedCoefficientIsEmpty || capturedCoefficientIsSignOnly) && capturedVariable === undefined) {
+      // This case handles a bare sign with no variable letter. When would this occur?
+      // Perhaps only when user is entering a new term and has only typed + or -.
+      // Consider the coefficient to be zero in this case.
+      return math.fraction(0);
+    }
+    else if (capturedCoefficientIsEmpty || capturedCoefficientIsSignOnly) {
+      // This case handles a bare variable with implied coefficient = 1, e.g. +x or - x or x^5
+      // Parsing is done on what basically amounts to the sign, with the number 1 stuffed in after
+      return math.fraction(`${capturedCoefficient.replace(/\s/g, "")}1`); // regex eliminates white space
+    }
+    else {
+      // This is the normal case where there is a sign, a number/fraction, 
+      // and a variable letter. Parse the whole thing as a fraction object.
+      return math.fraction(capturedCoefficient.replace(/\s/g, "")); // regex eliminates white space
+    }
   }
 
-  tokensToTermSet(tokens) {
-    const terms = tokens.map(x => new PolynomialTerm(
+  getVariableFromToken(token, variableLetterDefault) {
+    const capturedVariable = token[2];
+    if (capturedVariable === undefined) {
+      return variableLetterDefault;
+    }
+    else {
+      return capturedVariable.toLowerCase()
+    }
+  }
+
+  getExponentFromToken(token) {
+    const capturedExponent = token[3];
+    const capturedVariable = token[2];
+
+    if (capturedExponent === undefined) {
+      if (capturedVariable === undefined) {
+        return 0;
+      }
+      else {
+        return 1;
+      }
+    }
+    else {
+      // Fish the number out, casting as an integer. 
+      // Exponents should never be fractions in polynomials.
+      return parseInt(token[3].replace(/\s/g, ""));
+    }
+  }
+
+  tokensToTermSet(tokens, variableLetterDefault) {
+    // Here we process the raw polynomial term elements extracted from a 
+    // single polynomial string into well-formed polynomialTerm objects.
+    const terms = tokens.map(token => new PolynomialTerm(
+      this.getCoefficientFromToken(token),
+      this.getVariableFromToken(token, variableLetterDefault),
+      this.getExponentFromToken(token)
+    ));
+    const polynomialTermSet = new PolynomialTermSet(terms);
+    return polynomialTermSet;
+  }
+
+  tokensToTermSetOLD(tokens) {
+    // Here we process the raw polynomial term elements extracted from a 
+    // single polynomial string into well-formed polynomialTerm objects.
+
+    const terms = tokens.map(token => new PolynomialTerm(
+      // In the following logic, we map the regex-captured polynomial term tokens, extracted 
+      // in our tokenize method, to proper polynomialTerm objects. To do this, we look at the
+      // different captured subcomponents within each token - remembering that a token is itself
+      // an array of items. Those subcomponents are as follows:
+      //    token[0]: Text of the entire raw captured polynomial term, e.g. " + 2x^4"
+      //    token[1]: Text of the coefficient portion,        e.g. " + 2" (can be empty, +/- sign, numeral/fraction, or +/- sign with numeral/fraction)
+      //    token[2]: Text of the variable letter portion,    e.g. "x"    (can be a letter or empty string)
+      //    token[3]: Text of the numerical exponent portion, e.g. "4"    (can be empty or a numeral)
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       // set the coefficient. This has a lot of different cases but basically we are digging out a number, cast as a fraction type
-      ((x[1].trim() === "" || x[1].trim() === "+" || x[1].trim() === "-") && x[2] === undefined ? math.fraction(0) :
-        (x[1].trim() === "" || x[1].trim() === "+" || x[1].trim() === "-") ? math.fraction(parseInt(`${x[1].replace(/\s/g, "")}1`)) :
-          math.fraction(parseInt(x[1].replace(/\s/g, "")))),
+
+      // This case handles the situation where there is no variable letter, I think . . .
+      // Kind of weird to have that with a "+" or "-" sign is it not? Is this a real case?
+      // Probably handles case where user is in mid-typing of a new term and has only typed + or -
+      ((token[1].trim() === "" || token[1].trim() === "+" || token[1].trim() === "-") && token[2] === undefined ? math.fraction(0) :
+
+        // This case handles a bare variable, e.g. +x or - x or x^5 - any version of that with implied coefficient 1
+        // That is why the parsing is done on what basically amounts to the sign with the number 1 stuffed in after
+        (token[1].trim() === "" || token[1].trim() === "+" || token[1].trim() === "-") ? math.fraction(`${token[1].replace(/\s/g, "")}1`) :
+
+          // This is the normal case where there is a sign, a numeral, and a variable letter, so we just parse sign + numeral (x[1])
+          math.fraction(token[1].replace(/\s/g, ""))),
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       // set the variable letter. We default to "x" if nothing better is provided, but this should probably be updated
-      (x[2] === undefined ? "x" : x[2].toLowerCase()), // undefined case will become coefficient * x^0
-      // set the exponent. This is also a number we fish out, but should be an integer, not a fraction
-      (x[3] === undefined ? (x[2] === undefined ? 0 : 1) : parseInt(x[3].replace(/\s/g, "")))
+      (token[2] === undefined ? "x" : token[2].toLowerCase()), // undefined case will become coefficient * x^0
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      // set the exponent. This is also a number we fish out, but should always be an integer, not a fraction
+      (token[3] === undefined ? (token[2] === undefined ? 0 : 1) : parseInt(token[3].replace(/\s/g, "")))
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     ));
     const polynomialTermSet = new PolynomialTermSet(terms);
     return polynomialTermSet;
@@ -165,4 +225,4 @@ class PolynomialParser {
 }
 
 // Google Chrome won't run module based code from files for security reasons
-// export { doMatrixStuff }
+// export { PolynomialParser }

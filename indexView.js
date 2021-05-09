@@ -34,6 +34,10 @@ class IndexView {
     MathJax.typeset();
   }
 
+  clearPolynomialProduct() {
+    this.productDisplay.innerText = "";
+  }
+
   renderPolynomialFactorMatrix() {
     this.factorMatrixDisplay.textContent = this.model.divider.matrixToLatex();
     MathJax.typeset();

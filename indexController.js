@@ -12,11 +12,12 @@ class IndexController {
     this.model.inputValue = this.view.inputElement.value;
     if (this.validateInput()) {
       this.parseInput();
+      this.view.clearPolynomialProduct();
     }
   }
 
   validateInput() {
-    this.model.validationStatus = this.model.parser.getInputValidationStatus(this.model.inputValue);
+    this.model.validationStatus = this.model.validator.getInputValidationStatus(this.model.inputValue);
     this.view.renderValidationMessage();
     return (this.model.validationStatus.toLowerCase() === "valid");
   }
