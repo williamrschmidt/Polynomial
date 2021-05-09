@@ -6,7 +6,7 @@ class IndexModel {
     this.polynomialSet = [];
     this.polynomialProduct = undefined;
     this.validator = new PolynomialInputValidator(tokenizer);
-    this.parser = new PolynomialParser(tokenizer);
+    this.parser = new PolynomialInputParser(tokenizer);
     this.divider = new PolynomialDivider();
   }
 }

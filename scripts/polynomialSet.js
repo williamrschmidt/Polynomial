@@ -1,5 +1,4 @@
 class PolynomialSet {
-
   constructor(polynomials) {
     this.polynomials = [];
     if ((polynomials !== null) && (polynomials !== undefined)) {

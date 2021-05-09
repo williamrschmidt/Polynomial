@@ -85,7 +85,7 @@ class PolynomialDivider {
   }
 
   prepareDivisionStep() {
-    // The matrix row contianing polynomial coefficients already is in place.
+    // The matrix row containing polynomial coefficients already is in place.
     // Extract the polynomial from that existing matrix row, then determine 
     // whether it has rational zeroes. If it does not, return false. If it 
     // does, pick one of them to use as divisor, and set up the division step 

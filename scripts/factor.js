@@ -1,4 +1,3 @@
-
 // Variation on source found at http://javascripter.net/math/primes/factorization.htm
 // That source returns the factors in a string, e.g. '3*3*5' for the number 45.
 // We return the factors in an array: 45 => [3,3,5], which is much more useful. 

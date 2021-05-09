@@ -1,5 +1,4 @@
 class PolynomialTerm {
-
   constructor(coefficient, variable, exponent) {
     this.coefficient = coefficient;
     this.variable = variable;
@@ -13,6 +12,16 @@ class PolynomialTerm {
       ),
       this);
     return clonedObject;
+  }
+
+  toLatex(polynomialDegree, includeZeroCoefficientTerms) {
+    const hasZeroCoefficient = math.equal(this.coefficient, 0);
+    if (hasZeroCoefficient && (math.equal(this.exponent, 0) || !includeZeroCoefficientTerms)) {
+      return "";
+    }
+    else {
+      return `${this.signToLatex(polynomialDegree)}${this.unsignedTermToLatex()}`;
+    }
   }
 
   signToLatex(polynomialDegree) {
@@ -73,13 +82,4 @@ class PolynomialTerm {
     return result;
   }
 
-  toLatex(polynomialDegree, includeZeroCoefficientTerms) {
-    const hasZeroCoefficient = math.equal(this.coefficient, 0);
-    if (hasZeroCoefficient && (math.equal(this.exponent, 0) || !includeZeroCoefficientTerms)) {
-      return "";
-    }
-    else {
-      return `${this.signToLatex(polynomialDegree)}${this.unsignedTermToLatex()}`;
-    }
-  }
 }

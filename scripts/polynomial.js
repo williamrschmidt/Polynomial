@@ -2,7 +2,6 @@
 // import { allFactorsOf } from './factor.js'
 
 class Polynomial {
-
   constructor(polynomialTermSet) {
     this.termSet = polynomialTermSet;
 
@@ -54,11 +53,6 @@ class Polynomial {
     // ensure numbers are treated as fractions
     let xValueAsFraction = math.fraction(xValue);
     let coeffsAsFractions = this.rationalCoefficients;
-    //console.log("Evaluating");
-    //console.log("xValue");
-    //console.log(xValueAsFraction);
-    //console.log("coefficients");
-    //console.log(coeffsAsFractions);
     let value = math.Fraction(0);
     for (let coeffIdx = 0, currentPower = this.degree; coeffIdx <= this.degree; coeffIdx++, currentPower--) {
       value = math.sum(value, math.multiply(coeffsAsFractions[coeffIdx], xValueAsFraction.pow(currentPower)));

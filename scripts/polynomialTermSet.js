@@ -2,7 +2,6 @@
 // import { allFactorsOf } from './factor.js'
 
 class PolynomialTermSet {
-
   constructor(polynomialTerms) {
     this.terms = polynomialTerms;
     this.combineLikeTerms();
@@ -31,7 +30,7 @@ class PolynomialTermSet {
     });
 
     // Watch out - this sort order does not seem to work if exponents are fraction objects!
-    // We shouldn't allow this anyway because it violates the definition of a polynomial
+    // User input validation should prevent this as violating the definition of a polynomial.
     let termsConsolidatedSorted = termsConsolidated.sort((a, b) => b.exponent - a.exponent);
     this.terms = termsConsolidatedSorted;
   }

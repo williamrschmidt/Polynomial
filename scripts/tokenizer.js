@@ -20,12 +20,8 @@ class Tokenizer {
     // Further resources
     // https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-    console.log("Tokenizer.tokenize: Entering");
-    console.log(`Tokenizer.tokenize: Input string: ${str}`)
-    console.log(`Tokenizer.tokenize: Regex: ${regex}`)
     let tokens = [];
     let token;
-
     while ((token = regex.exec(str)) !== null) {
       // This is necessary to avoid infinite loops with zero-width matches
       if (token.index === regex.lastIndex) {
@@ -34,8 +30,6 @@ class Tokenizer {
       // Only push the captured token if it is non-empty
       if (token[0] !== "") tokens.push(token);
     }
-    console.log("Tokenizer.tokenize: Tokens");
-    console.log(tokens);
     return tokens;
   }
 

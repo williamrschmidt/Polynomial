@@ -2,7 +2,6 @@
 // import { allFactorsOf } from './factor.js'
 
 class PolynomialInputValidator {
-
   constructor(tokenizer) {
     // Tokenizer is used to parse strings to token arrays
     this.tokenizer = tokenizer;
