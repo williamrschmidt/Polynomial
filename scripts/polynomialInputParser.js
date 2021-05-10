@@ -13,7 +13,7 @@ class PolynomialInputParser {
     //     (\s*x)?                     captures the variable letter   e.g. "x", "x", "", "x"
     //     (?:\s*\^\s*([\+-]?\s*\d+))? identifies an exponent segment e.g. "^5", "^3", "", ""
     //                ([\+-]?\s*\d+)   captures the numeric exponent  e.g. "5", "3", "", ""
-    this.polynomialTermRegex = /(\s*[\+-]?\s*\d*[/]?\d*)(\s*x)?(?:\s*\^\s*([\+-]?\s*\d+))?/gi;
+    this.polynomialTermRegex = /(\s*[\+-]?\s*\d*[/]?\d*)(\s*[a-zA-Z])?(?:\s*\^\s*([\+-]?\s*\d+))?/gi;
 
     // The regex below captures all the whole polynomials between parentheses in a string
     // Given "(2x^3 - 5)(4x + 4)", captures "2x^3 - 5" and "4x + 4"
@@ -23,6 +23,13 @@ class PolynomialInputParser {
 
     // The regex below determines whether either a left or right parenthesis exists in a string.
     this.hasParenthesesRegex = /[\(\)]/g;
+
+    // REPEATED IN PolynomialInputValidator; 
+    // Should regexes be put in their own little class to avoid duplication?
+    // Should these all be added to the Tokenizer class and referenced there?
+    // The regex below captures all individual letters from a string
+    // Given "2xy + 3z - 4w", captures "x", "y" and "w"
+    this.individualLetterCaptureRegex = /([a-zA-Z]{1})/g;
   }
 
   parseInputToPolynomialSet(input) {
@@ -36,14 +43,41 @@ class PolynomialInputParser {
     return polynomialSet;
   }
 
+  getDefaultVariableLetter(input) {
+    let result = "x";
+    console.log("getDefaultVariableLetter: Entering");
+    console.log(`getDefaultVariableLetter: Input: ${input}`);
+    // Capture tokens representing individual letter characters.
+    // Each captured token is itself an array. For string "x + y", 
+    // the first captured token is ["x", "x", index: 0, input: "x + y", groups: undefined].
+    // The second captured token is ["y", "y", index: 4, input: "x + y", groups: undefined]
+    const singleLetterTokens = this.tokenizer.tokenize(input, this.individualLetterCaptureRegex);
+    console.log("getDefaultVariableLetter: Single letter tokens");
+    console.log(singleLetterTokens);
+    // Since input validation should have already taken care of preventing there being
+    // more than one different letter, check to see if any single letter tokens were
+    // found at all. If any were found, simply use the first one as the default variable 
+    // letter. If none were found, set the default variable letter to "x". 
+    if (singleLetterTokens.length > 0) {
+      result = singleLetterTokens[0][0];
+    }
+    console.log(`getDefaultVariableLetter: Result: ${result}`);
+    console.log("getDefaultVariableLetter: Exiting");
+    return result;
+  }
+
   parsePolynomialStringToTermSet(input) {
+    console.log("parsePolynomialStringToTermSet: Entering");
     // TODO Currently setting "x" as hard default. Improving this would mean scanning the whole polynomial 
     // string for letters first. We should do that here, where we do have the entire input available.
     // User input validation should already ensure we only have one variable letter at most in the polynomial.
     // "x" should only be used if the polynomial contains no variable letters at all (only a constant term).
-    const variableLetterDefault = "x";
+    const variableLetterDefault = this.getDefaultVariableLetter(input);
     let tokens = this.tokenizer.tokenize(input, this.polynomialTermRegex);
+    console.log("parsePolynomialStringToTermSet: Tokens");
+    console.log(tokens);
     let termSet = this.tokensToTermSet(tokens, variableLetterDefault);
+    console.log("parsePolynomialStringToTermSet: Exiting");
     return termSet;
   }
 
