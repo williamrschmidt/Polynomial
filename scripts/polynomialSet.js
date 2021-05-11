@@ -26,8 +26,6 @@ class PolynomialSet {
   toLatex(includeZeroCoefficientTerms) {
     const latexOuterDelimiter = "$$";
     const result = `${latexOuterDelimiter}${this.toInnerLatex(includeZeroCoefficientTerms)}${latexOuterDelimiter}`;
-    //console.log("Polynomial set latex");
-    //console.log(result);
     return result;
   }
 
@@ -41,8 +39,6 @@ class PolynomialSet {
         result = result + "(" + polynomial.toInnerLatex(includeZeroCoefficientTerms) + ")";
       });
     }
-    ////console.log("Polynomial set inner latex");
-    ////console.log(result);
     return result;
   }
 }

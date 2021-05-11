@@ -2,34 +2,10 @@
 // import { allFactorsOf } from './factor.js'
 
 class PolynomialInputParser {
-  constructor(tokenizer) {
+  constructor(tokenizer, regexPatterns) {
     // Tokenizer is used to parse strings to token arrays
     this.tokenizer = tokenizer;
-
-    // The regex below captures all individual polynomial terms from one polynomial string
-    // Given "2x^5 - 4/5x^3 + 4x - 4", captures "2x^5", " - 4/5x^3", " + 4x", and " - 4"
-    // Each capture gets the entire term along with three sub-segments defined via capture groups ()
-    //     (\s*[\+-]?\s*\d*[/]?\d*)    captures the coefficient       e.g. "2", " - 4/5", " + 4", " - 4"
-    //     (\s*x)?                     captures the variable letter   e.g. "x", "x", "", "x"
-    //     (?:\s*\^\s*([\+-]?\s*\d+))? identifies an exponent segment e.g. "^5", "^3", "", ""
-    //                ([\+-]?\s*\d+)   captures the numeric exponent  e.g. "5", "3", "", ""
-    this.polynomialTermRegex = /(\s*[\+-]?\s*\d*[/]?\d*)(\s*[a-zA-Z])?(?:\s*\^\s*([\+-]?\s*\d+))?/gi;
-
-    // The regex below captures all the whole polynomials between parentheses in a string
-    // Given "(2x^3 - 5)(4x + 4)", captures "2x^3 - 5" and "4x + 4"
-    this.polynomialBetweenParenthesesRegex = /\(([^)]+)\)/g;
-    //this.polynomialBetweenParenthesesRegex = /\(([^\)])\)/g; Corrupted the regex! Stopped working! Doesn't pick up multi-chars in parens.
-    //this.polynomialBetweenParenthesesRegex = /\((.*)\)/g; picks up single polys in parens but mashes multi polys together into one bogus one
-
-    // The regex below determines whether either a left or right parenthesis exists in a string.
-    this.hasParenthesesRegex = /[\(\)]/g;
-
-    // REPEATED IN PolynomialInputValidator; 
-    // Should regexes be put in their own little class to avoid duplication?
-    // Should these all be added to the Tokenizer class and referenced there?
-    // The regex below captures all individual letters from a string
-    // Given "2xy + 3z - 4w", captures "x", "y" and "w"
-    this.individualLetterCaptureRegex = /([a-zA-Z]{1})/g;
+    this.patterns = regexPatterns;
   }
 
   parseInputToPolynomialSet(input) {
@@ -44,16 +20,13 @@ class PolynomialInputParser {
   }
 
   getDefaultVariableLetter(input) {
+    // Define default result in case polynomial string has no letters (i.e. constant term only).
     let result = "x";
-    console.log("getDefaultVariableLetter: Entering");
-    console.log(`getDefaultVariableLetter: Input: ${input}`);
     // Capture tokens representing individual letter characters.
     // Each captured token is itself an array. For string "x + y", 
     // the first captured token is ["x", "x", index: 0, input: "x + y", groups: undefined].
     // The second captured token is ["y", "y", index: 4, input: "x + y", groups: undefined]
-    const singleLetterTokens = this.tokenizer.tokenize(input, this.individualLetterCaptureRegex);
-    console.log("getDefaultVariableLetter: Single letter tokens");
-    console.log(singleLetterTokens);
+    const singleLetterTokens = this.tokenizer.tokenize(input, this.patterns.individualLetterCaptureRegex);
     // Since input validation should have already taken care of preventing there being
     // more than one different letter, check to see if any single letter tokens were
     // found at all. If any were found, simply use the first one as the default variable 
@@ -61,36 +34,30 @@ class PolynomialInputParser {
     if (singleLetterTokens.length > 0) {
       result = singleLetterTokens[0][0];
     }
-    console.log(`getDefaultVariableLetter: Result: ${result}`);
-    console.log("getDefaultVariableLetter: Exiting");
     return result;
   }
 
   parsePolynomialStringToTermSet(input) {
-    console.log("parsePolynomialStringToTermSet: Entering");
     // TODO Currently setting "x" as hard default. Improving this would mean scanning the whole polynomial 
     // string for letters first. We should do that here, where we do have the entire input available.
     // User input validation should already ensure we only have one variable letter at most in the polynomial.
     // "x" should only be used if the polynomial contains no variable letters at all (only a constant term).
     const variableLetterDefault = this.getDefaultVariableLetter(input);
-    let tokens = this.tokenizer.tokenize(input, this.polynomialTermRegex);
-    console.log("parsePolynomialStringToTermSet: Tokens");
-    console.log(tokens);
+    let tokens = this.tokenizer.tokenize(input, this.patterns.polynomialTermRegex);
     let termSet = this.tokensToTermSet(tokens, variableLetterDefault);
-    console.log("parsePolynomialStringToTermSet: Exiting");
     return termSet;
   }
 
   parseInputToPolynomialStrings(input) {
     let result = [];
 
-    if (!input.match(this.hasParenthesesRegex)) {
+    if (!input.match(this.patterns.hasParenthesesRegex)) {
       // No parentheses found, so assume the entire input string is 
       // one polynomial and return it in a single-element array
       result.push(input);
     }
     else {
-      let wholePolynomialTokens = this.tokenizer.tokenize(input, this.polynomialBetweenParenthesesRegex);
+      let wholePolynomialTokens = this.tokenizer.tokenize(input, this.patterns.polynomialBetweenParenthesesRegex);
       wholePolynomialTokens.forEach(token => {
         if ((token[0] !== "") && (token[0] !== undefined)) {
           result.push(token[0]);
@@ -136,12 +103,12 @@ class PolynomialInputParser {
     else if (capturedCoefficientIsEmpty || capturedCoefficientIsSignOnly) {
       // This case handles a bare variable with implied coefficient = 1, e.g. +x or - x or x^5
       // Parsing is done on what basically amounts to the sign, with the number 1 stuffed in after
-      return math.fraction(`${capturedCoefficient.replace(/\s/g, "")}1`); // regex eliminates white space
+      return math.fraction(`${capturedCoefficient.replace(this.patterns.whitespaceRegex, "")}1`);
     }
     else {
       // This is the normal case where there is a sign, a number/fraction, 
       // and a variable letter. Parse the whole thing as a fraction object.
-      return math.fraction(capturedCoefficient.replace(/\s/g, "")); // regex eliminates white space
+      return math.fraction(capturedCoefficient.replace(this.patterns.whitespaceRegex, ""));
     }
   }
 
@@ -174,7 +141,7 @@ class PolynomialInputParser {
     else {
       // Fish the number out, casting as an integer.
       // Polynomial exponents should never be fractions.
-      return parseInt(token[3].replace(/\s/g, ""));
+      return parseInt(token[3].replace(this.patterns.whitespaceRegex, ""));
     }
   }
 

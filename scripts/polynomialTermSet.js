@@ -28,7 +28,6 @@ class PolynomialTermSet {
         }
       }
     });
-
     // Watch out - this sort order does not seem to work if exponents are fraction objects!
     // User input validation should prevent this as violating the definition of a polynomial.
     let termsConsolidatedSorted = termsConsolidated.sort((a, b) => b.exponent - a.exponent);

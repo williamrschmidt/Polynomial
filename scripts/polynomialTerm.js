@@ -45,19 +45,11 @@ class PolynomialTerm {
   }
 
   unsignedTermToLatex() {
-    //console.log("UNSIGNED TERM TO LATEX - ORIGINAL TERM");
-    //console.log(this);
     let result;
     const hasZeroExponent = math.equal(this.exponent, 0);
     const hasUnitExponent = math.equal(this.exponent, 1);
     const hasUnitCoefficient = math.equal(math.abs(this.coefficient), 1);
-    //console.log("UNSIGNED TERM TO LATEX - COEFFICIENT");
-    //console.log(typeof (this.coefficient));
-    //console.log(this.coefficient);
     const coefficientAbsoluteValue = math.abs(this.coefficient);
-    //console.log("UNSIGNED TERM TO LATEX - COEFFICIENT ABSOLUTE VALUE");
-    //console.log(typeof (coefficientAbsoluteValue));
-    //console.log(coefficientAbsoluteValue);
     if (hasZeroExponent) {
       result = `${coefficientAbsoluteValue.toLatex()}`;
     }
@@ -77,8 +69,6 @@ class PolynomialTerm {
         result = `${coefficientAbsoluteValue.toLatex()}${this.variable}^{${this.exponent}}`;
       }
     }
-    //console.log("HERE IS THE RESULT");
-    //console.log(result);
     return result;
   }
 

@@ -12,7 +12,10 @@ class IndexController {
     this.model.inputValue = this.view.inputElement.value;
     if (this.validateInput()) {
       this.parseInput();
+      // Changes to user input invalidate previously calculated products or factors
       this.view.clearPolynomialProduct();
+      this.view.clearPolynomialFactors();
+      this.view.clearPolynomialFactorMatrix();
     }
   }
 

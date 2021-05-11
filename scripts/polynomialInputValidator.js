@@ -2,19 +2,10 @@
 // import { allFactorsOf } from './factor.js'
 
 class PolynomialInputValidator {
-  constructor(tokenizer) {
+  constructor(tokenizer, regexPatterns) {
     // Tokenizer is used to parse strings to token arrays
     this.tokenizer = tokenizer;
-
-    // The regex below captures all individual letters from a string
-    // Given "2xy + 3z - 4w", captures "x", "y" and "w"
-    this.individualLetterCaptureRegex = /([a-zA-Z]{1})/g;
-
-    // The regexes below identify relatively simple patterns. They are used to
-    // determine whether a string does or does not contain the defined pattern.
-    this.multiLetterSequenceRegex = /[A-Za-z]{2}/;
-    this.letterFollowedByNumeralRegex = /[a-zA-Z][0-9]/;
-    this.fractionRegex = /\d+\s*[/]/;
+    this.patterns = regexPatterns;
   }
 
   hasMultipleDifferentLetters(input) {
@@ -23,7 +14,7 @@ class PolynomialInputValidator {
     // Each captured token is itself an array. For string "x + y", 
     // the first captured token is ["x", "x", index: 0, input: "x + y", groups: undefined].
     // The second captured token is ["y", "y", index: 4, input: "x + y", groups: undefined]
-    const singleLetterTokens = this.tokenizer.tokenize(input, this.individualLetterCaptureRegex);
+    const singleLetterTokens = this.tokenizer.tokenize(input, this.patterns.individualLetterCaptureRegex);
 
     // Analyze to see if captured single letter tokens are all the same or different  
     let multipleLettersFound = false;
@@ -42,17 +33,17 @@ class PolynomialInputValidator {
   hasMultipleLettersInARow(input) {
     // Check for multiple letters in a row, e.g. xx. This will also on its own find patterns
     // like xy, but that will have been caught already by the multi-letter test above.
-    return input.match(this.multiLetterSequenceRegex);
+    return input.match(this.patterns.multiLetterSequenceRegex);
   }
 
   hasLetterFollowedbyNumeral(input) {
     // check for letters followed immediately by numerals, e.g. x4 rather than the correct x^4.
-    return input.match(this.letterFollowedByNumeralRegex);
+    return input.match(this.patterns.letterFollowedByNumeralRegex);
   }
 
   hasFraction(input) {
     // check for letters followed immediately by numerals, e.g. x4 rather than the correct x^4.
-    return input.match(this.fractionRegex);
+    return input.match(this.patterns.fractionRegex);
   }
 
   getInputValidationStatus(input) {

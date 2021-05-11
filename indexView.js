@@ -25,17 +25,26 @@ class IndexView {
   }
 
   renderPolynomialSet() {
-    this.parsedInputDisplay.innerText = this.model.polynomialSet.toLatex(this.renderZeroCoefficientTerms);
+    this.parsedInputDisplay.textContent = this.model.polynomialSet.toLatex(this.renderZeroCoefficientTerms);
     MathJax.typeset();
   }
 
   renderPolynomialProduct() {
-    this.productDisplay.innerText = this.model.polynomialProduct.toLatex(this.renderZeroCoefficientTerms);
+    this.productDisplay.textContent = this.model.polynomialProduct.toLatex(this.renderZeroCoefficientTerms);
     MathJax.typeset();
   }
 
   clearPolynomialProduct() {
-    this.productDisplay.innerText = "";
+    this.productDisplay.textContent = "";
+  }
+
+  renderPolynomialFactors() {
+    this.factorSetDisplay.textContent = this.model.divider.polynomialFactorsToLatex();
+    MathJax.typeset();
+  }
+
+  clearPolynomialFactors() {
+    this.factorSetDisplay.textContent = "";
   }
 
   renderPolynomialFactorMatrix() {
@@ -43,9 +52,8 @@ class IndexView {
     MathJax.typeset();
   }
 
-  renderPolynomialFactors() {
-    this.factorSetDisplay.textContent = this.model.divider.polynomialFactorsToLatex();
-    MathJax.typeset();
+  clearPolynomialFactorMatrix() {
+    this.factorMatrixDisplay.textContent = "";
   }
 
 }

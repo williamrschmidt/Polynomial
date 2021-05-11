@@ -230,9 +230,6 @@ class PolynomialDivider {
       }
     }
     output = `${output} ${matrixEndTag}`;
-    //Uncomment to see LaTex used to typeset the matrix
-    //console.log("Matrix LaTex");
-    //console.log(output);
     return output;
   }
 

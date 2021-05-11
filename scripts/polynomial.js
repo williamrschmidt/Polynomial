@@ -26,7 +26,7 @@ class Polynomial {
 
   get rationalCoefficients() {
     // Converts coefficients to fractional representation
-    // Intended for use with integer coefficients mainly
+    // in case they are not already math.fraction objects
     return this.coeffs.map(x => math.fraction(x));
   }
 
@@ -77,8 +77,6 @@ class Polynomial {
   toLatex(includeZeroCoefficientTerms) {
     const latexOuterDelimiter = "$$";
     const latex = `${latexOuterDelimiter}${this.toInnerLatex(includeZeroCoefficientTerms)}${latexOuterDelimiter}`;
-    //console.log("Polynomial latex");
-    //console.log(latex);
     return latex;
   }
 
