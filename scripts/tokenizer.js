@@ -1,4 +1,6 @@
-// Google Chrome won't run module based code from files for security reasons
+/* eslint-disable no-unused-vars, no-undef */
+
+// Chrome won't run module based code from files for security reasons
 // import { allFactorsOf } from './factor.js'
 
 class Tokenizer {
@@ -35,5 +37,5 @@ class Tokenizer {
 
 }
 
-// Google Chrome won't run module based code from files for security reasons
+// Chrome won't run module based code from files for security reasons
 // export { PolynomialParser }

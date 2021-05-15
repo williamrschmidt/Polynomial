@@ -1,4 +1,6 @@
-// Google Chrome won't run module based code from files for security reasons
+/* eslint-disable no-unused-vars, no-undef */
+
+// Chrome won't run module based code from files for security reasons
 // import { polynomial } from './polynomial.js'
 
 class PolynomialDivider {
@@ -239,5 +241,5 @@ class PolynomialDivider {
   }
 }
 
-// Google Chrome won't run module based code from files for security reasons
+// Chrome won't run module based code from files for security reasons
 // export { PolynomialDivider }

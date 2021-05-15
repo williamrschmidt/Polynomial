@@ -1,8 +1,11 @@
+/* eslint-disable no-unused-vars, no-undef */
+
 // Variation on source found at http://javascripter.net/math/primes/factorization.htm
 // That source returns the factors in a string, e.g. '3*3*5' for the number 45.
 // We return the factors in an array: 45 => [3,3,5], which is much more useful. 
 // Negative numbers are factored by including -1 in the return array with the
 // positive prime factors of the number's absolute value: -45 => [-1,3,3,5].
+
 function primeFactorsOf(n) {
   let factors = [];
   if (isNaN(n) || !isFinite(n) || n % 1 != 0 || n == 0) factors.push(n);
@@ -102,6 +105,5 @@ function allFactorsOf(n) {
   return sort(deduplicate(possibleProductsOf(primeFactorsOf(n))));
 }
 
-// Google Chrome won't run module based code from files for security reasons
-// Export the primary functions that are intended for external use.
+// Chrome won't run module based code from files for security reasons
 // export { primeFactorsOf, allFactorsOf }

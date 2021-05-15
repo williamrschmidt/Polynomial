@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, no-undef */
+
 // Composition root to "wire up" our page. 
 // Specific behaviors are implemented in 
 // model, view, and controller.

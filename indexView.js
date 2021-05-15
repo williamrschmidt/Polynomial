@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, no-undef */
+
 class IndexView {
   constructor(document, model) {
     this.model = model;

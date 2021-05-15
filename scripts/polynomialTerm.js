@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, no-undef */
+
 class PolynomialTerm {
   constructor(coefficient, variable, exponent) {
     this.coefficient = coefficient;

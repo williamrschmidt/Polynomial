@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, no-undef */
+
 class IndexModel {
   constructor() {
     const tokenizer = new Tokenizer();

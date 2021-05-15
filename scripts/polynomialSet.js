@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, no-undef */
+
 class PolynomialSet {
   constructor(polynomials) {
     this.polynomials = [];
