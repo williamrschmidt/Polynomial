@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars, no-undef */
 
+// View handles basic HTML updates and MathJax typesetting using model data
+
 class IndexView {
-  constructor(document, model) {
+  constructor(document, model, renderZeroCoefficientTerms) {
     this.model = model;
+    this.renderZeroCoefficientTerms = renderZeroCoefficientTerms;
     this.inputElement = document.getElementById("input");
     this.inputValidationDisplay = document.getElementById("inputValidationDisplay");
     this.parsedInputDisplay = document.getElementById("parsedInputDisplay");
@@ -11,7 +14,6 @@ class IndexView {
     this.factorButton = document.getElementById("factorButton");
     this.factorMatrixDisplay = document.getElementById("factorMatrixDisplay");
     this.factorSetDisplay = document.getElementById("factorSetDisplay");
-    this.renderZeroCoefficientTerms = false;
   }
 
   renderValidationMessage() {

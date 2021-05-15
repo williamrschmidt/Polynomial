@@ -11,14 +11,18 @@ class IndexController {
   }
 
   processInput() {
-    this.model.inputValue = this.view.inputElement.value;
+    this.updateModelInputValue();
     if (this.validateInput()) {
       this.parseInput();
-      // Changes to user input invalidate previously calculated products or factors
+      // User has changed input so clear previously calculated products or factors
       this.view.clearPolynomialProduct();
       this.view.clearPolynomialFactors();
       this.view.clearPolynomialFactorMatrix();
     }
+  }
+
+  updateModelInputValue() {
+    this.model.inputValue = this.view.inputElement.value;
   }
 
   validateInput() {

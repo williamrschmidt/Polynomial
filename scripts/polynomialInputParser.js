@@ -143,7 +143,7 @@ class PolynomialInputParser {
     else {
       // Fish the number out, casting as an integer.
       // Polynomial exponents should never be fractions.
-      return parseInt(token[3].replace(this.patterns.whitespaceRegex, ""));
+      return parseInt(token[3].replace(this.patterns.whitespaceRegex, ""), 10);
     }
   }
 

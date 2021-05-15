@@ -4,8 +4,6 @@
 // import { allFactorsOf } from './factor.js'
 
 class Tokenizer {
-  constructor() {
-  }
 
   tokenize(str, regex) {
     // Uses a regex to read one or more tokens from a string into an array.

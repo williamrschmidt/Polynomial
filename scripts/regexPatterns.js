@@ -12,14 +12,14 @@ class RegexPatterns {
     //     (\s*x)?                     captures the variable letter   e.g. "x", "x", "", "x"
     //     (?:\s*\^\s*([\+-]?\s*\d+))? identifies an exponent segment e.g. "^5", "^3", "", ""
     //                ([\+-]?\s*\d+)   captures the numeric exponent  e.g. "5", "3", "", ""
-    this.polynomialTermRegex = /(\s*[\+-]?\s*\d*[/]?\d*)(\s*[a-zA-Z])?(?:\s*\^\s*([\+-]?\s*\d+))?/gi;
+    this.polynomialTermRegex = /(\s*[+-]?\s*\d*[/]?\d*)(\s*[a-zA-Z])?(?:\s*\^\s*([+-]?\s*\d+))?/gi;
 
     // The regex below captures all the whole polynomials between parentheses in a string
     // Given "(2x^3 - 5)(4x + 4)", captures "2x^3 - 5" and "4x + 4"
     this.polynomialBetweenParenthesesRegex = /\(([^)]+)\)/g;
 
     // The regex below determines whether either a left or right parenthesis exists in a string.
-    this.hasParenthesesRegex = /[\(\)]/g;
+    this.hasParenthesesRegex = /[()]/g;
 
     // The regex below captures all individual letters from a string
     // Given "2xy + 3z - 4w", captures "x", "y" and "w"

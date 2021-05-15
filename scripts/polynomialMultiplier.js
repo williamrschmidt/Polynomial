@@ -4,8 +4,6 @@
 // import { polynomial } from './polynomial.js'
 
 class PolynomialMultiplier {
-  constructor() {
-  }
 
   multiply(polynomial1, polynomial2) {
     // We are assuming the two polynomials are in the same variable, e.g. "x".
@@ -24,6 +22,7 @@ class PolynomialMultiplier {
     let productPolynomial = new Polynomial(productTermSet);
     return productPolynomial;
   }
+
 }
 
 // Chrome won't run module based code from files for security reasons
