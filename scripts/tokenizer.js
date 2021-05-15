@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, no-undef */
+/* eslint-disable no-unused-vars, no-undef, no-cond-assign */
 
 // Chrome won't run module based code from files for security reasons
 // import { allFactorsOf } from './factor.js'

@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars, no-undef */
 
+// Controller updates model and view in response to user input
+// Model, view and event handlers are wired up in constructor
+
 class IndexController {
   constructor(model, view) {
     this.model = model;

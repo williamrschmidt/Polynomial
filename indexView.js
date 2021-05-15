@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars, no-undef */
 
-// View handles basic HTML updates and MathJax typesetting using model data
+// View handles basic HTML updates and MathJax typesetting
 
 class IndexView {
   constructor(document, model, renderZeroCoefficientTerms) {
