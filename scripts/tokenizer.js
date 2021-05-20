@@ -3,6 +3,7 @@
 // Chrome won't run module based code from files for security reasons
 // import { allFactorsOf } from './factor.js'
 
+// Tokenizer is used to parse strings to token arrays
 class Tokenizer {
 
   tokenize(str, regex) {

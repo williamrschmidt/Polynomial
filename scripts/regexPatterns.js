@@ -8,10 +8,10 @@ class RegexPatterns {
     // The regex below captures all individual polynomial terms from one polynomial string
     // Given "2x^5 - 4/5x^3 + 4x - 4", captures "2x^5", " - 4/5x^3", " + 4x", and " - 4"
     // Each capture gets the entire term along with three sub-segments defined via capture groups ()
-    //     (\s*[\+-]?\s*\d*[/]?\d*)    captures the coefficient       e.g. "2", " - 4/5", " + 4", " - 4"
-    //     (\s*x)?                     captures the variable letter   e.g. "x", "x", "", "x"
-    //     (?:\s*\^\s*([\+-]?\s*\d+))? identifies an exponent segment e.g. "^5", "^3", "", ""
-    //                ([\+-]?\s*\d+)   captures the numeric exponent  e.g. "5", "3", "", ""
+    //     (\s*[+-]?\s*\d*[/]?\d*)    captures the coefficient       e.g. "2", " - 4/5", " + 4", " - 4"
+    //     (\s*x)?                    captures the variable letter   e.g. "x", "x", "", "x"
+    //     (?:\s*\^\s*([+-]?\s*\d+))? identifies an exponent segment e.g. "^5", "^3", "", ""
+    //                ([+-]?\s*\d+)   captures the numeric exponent  e.g. "5", "3", "", ""
     this.polynomialTermRegex = /(\s*[+-]?\s*\d*[/]?\d*)(\s*[a-zA-Z])?(?:\s*\^\s*([+-]?\s*\d+))?/gi;
 
     // The regex below captures all the whole polynomials between parentheses in a string

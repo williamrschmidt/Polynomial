@@ -5,7 +5,6 @@
 
 class PolynomialInputValidator {
   constructor(tokenizer, regexPatterns) {
-    // Tokenizer is used to parse strings to token arrays
     this.tokenizer = tokenizer;
     this.patterns = regexPatterns;
   }

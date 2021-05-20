@@ -2,11 +2,11 @@
 
 class PolynomialSet {
   constructor(polynomials) {
+    this.multiplier = new PolynomialMultiplier()
     this.polynomials = [];
     if ((polynomials !== null) && (polynomials !== undefined)) {
       this.polynomials = polynomials;
     }
-    this.multiplier = new PolynomialMultiplier()
   }
 
   multiplyAll() {

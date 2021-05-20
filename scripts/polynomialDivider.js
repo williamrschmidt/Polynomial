@@ -7,7 +7,7 @@ class PolynomialDivider {
   constructor() {
     // Initialize matrix with a seed array, which will eventually contain 
     // polynomial coefficients and a leading null position for the divisor
-    this.matrix = [];
+    this.divisionMatrix = [];
 
     // The variable letter used for output will be set in the
     // divideAll method based on the polynomial being factored
@@ -19,16 +19,16 @@ class PolynomialDivider {
     // coefficients for the next division should be in the last matrix "row" array.
     // Determine how many step have been taken in the division. For a matrix with more
     // than zero rows, this should be equal to (number of rows - 1) divided by two.
-    if (math.equal(this.matrix.length, 0)) {
+    if (math.equal(this.divisionMatrix.length, 0)) {
       return 0;
     }
     else {
-      return math.divide((this.matrix.length - 1), 2);
+      return math.divide((this.divisionMatrix.length - 1), 2);
     }
   }
 
   getPolynomialFromLastRow() {
-    const lastRow = this.matrix[this.matrix.length - 1];
+    const lastRow = this.divisionMatrix[this.divisionMatrix.length - 1];
     let terms = [];
 
     // Iterate the row, excluding the first column (index = 0) containing the divisor,
@@ -54,7 +54,7 @@ class PolynomialDivider {
     // After doing this, we also extract any unfactored  remainder polynomial.
     // The binomials and the remainder are returned as a polynomial set.
     const binomialSet = new PolynomialSet();
-    this.matrix.forEach(matrixRow => {
+    this.divisionMatrix.forEach(matrixRow => {
       const divisor = matrixRow[0];
       if ((divisor !== null) && (divisor !== undefined)) {
         const leadingTerm = new PolynomialTerm(math.fraction(1), this.variableLetterForOutput, 1);
@@ -104,10 +104,10 @@ class PolynomialDivider {
       // Whether the matrix is newly created or the result of previous division rounds,
       // coefficients for the next division should be in the last matrix "row" array.
       // Set the divisor as the first element in that row, and create two new empty rows.
-      let lastRow = this.matrix[this.matrix.length - 1];
+      let lastRow = this.divisionMatrix[this.divisionMatrix.length - 1];
       lastRow[0] = math.fraction(divisor);
-      this.matrix.push(lastRow.map((x) => null));
-      this.matrix.push(lastRow.map((x) => null));
+      this.divisionMatrix.push(lastRow.map((x) => null));
+      this.divisionMatrix.push(lastRow.map((x) => null));
 
       // We are done preparing. Execution is handled elsewhere.
       return true;
@@ -117,10 +117,10 @@ class PolynomialDivider {
   executeDivisionStep() {
     // Execute one round of synthetic division, carrying out numeric 
     // manipulations more or less exactly as one would do on paper
-    let coeffs = this.matrix[this.matrix.length - 3];  // array two up from bottom array
+    let coeffs = this.divisionMatrix[this.divisionMatrix.length - 3];  // array two up from bottom array
     let divisor = coeffs[0];
-    let addenda = this.matrix[this.matrix.length - 2]; // array one up from bottom array
-    let sums = this.matrix[this.matrix.length - 1];    // bottom array
+    let addenda = this.divisionMatrix[this.divisionMatrix.length - 2]; // array one up from bottom array
+    let sums = this.divisionMatrix[this.divisionMatrix.length - 1];    // bottom array
 
     // Column 0 contains the divisor, so start with column 1, containing the polynomial's leading 
     // coefficient. Initiate division by dropping that coefficient directly down to the sums line.
@@ -165,12 +165,12 @@ class PolynomialDivider {
     // the divider can later read out the coefficients from the matrix and typset those polynomials on screen.
     this.variableLetterForOutput = polynomial.variableLetter;
 
-    this.matrix = []; // must reinitialize matrix as polynomial may be different from last division.
+    this.divisionMatrix = []; // must reinitialize matrix as polynomial may be different from last division.
 
     // The seed array is simply the first row of the matrix, containing the original 
     // polynomial coefficients, and an empty initial column (index = 0) for divisors
     let seedArray = [null, ...polynomial.rationalCoefficients];
-    this.matrix.push(seedArray);
+    this.divisionMatrix.push(seedArray);
 
     let canStart = (polynomial.actualRationalZeroes.length > 0);
     let canDivide = false;
@@ -206,7 +206,7 @@ class PolynomialDivider {
     // left-hand column for the divisor). A 2nd degree polynomial would
     // only require the tag '{r | r r r}', and in general the number of
     // 'r' characters after the pipe equals the polynomial degree.
-    const matrixWidth = this.matrix[0].length;
+    const matrixWidth = this.divisionMatrix[0].length;
     const charsAfterPipe = Array(matrixWidth - 1).fill('r'); // r = right-justify numbers
     return ['r', '|', ...charsAfterPipe];
   }
@@ -218,16 +218,16 @@ class PolynomialDivider {
     let matrixStartTag = `\\begin{array}{${this.latexColumnFormatString()}}`;
     let matrixEndTag = `\\end{array}`;
     let output = matrixStartTag;
-    for (let i = 0; i < this.matrix.length; i++) {
+    for (let i = 0; i < this.divisionMatrix.length; i++) {
       let isSumsRow = (i > 0 && i % 2 === 0);
       if (output === matrixStartTag) {
-        output = `${output} ${this.matrixRowToLatex(this.matrix[i])}`;
+        output = `${output} ${this.matrixRowToLatex(this.divisionMatrix[i])}`;
       }
       else {
         if (isSumsRow) {
-          output = `${output} \\\\ \\hline ${this.matrixRowToLatex(this.matrix[i])}`;
+          output = `${output} \\\\ \\hline ${this.matrixRowToLatex(this.divisionMatrix[i])}`;
         } else {
-          output = `${output} \\\\ ${this.matrixRowToLatex(this.matrix[i])}`;
+          output = `${output} \\\\ ${this.matrixRowToLatex(this.divisionMatrix[i])}`;
         }
       }
     }
